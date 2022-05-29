@@ -509,12 +509,6 @@ LIMIT " .$this_page_first_result.','.$results_per_page;
 
         ?>
 
-     <!--   mysqli_close($connection); -->
-
-
-
-
-
 
 </div>
     </div>

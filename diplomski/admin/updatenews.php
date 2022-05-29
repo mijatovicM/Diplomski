@@ -147,7 +147,7 @@ if(isset($_GET['success'])) {
     }
     $result2 = mysqli_query($connection, $sql2);
     while ($row = mysqli_fetch_array($result2)) {
-        $restnewstype=$row{'newstype'};
+        $restnewstype=$row['newstype'];
         echo "<option>" . $restnewstype . "</option>";
     }
         ?></option>

@@ -126,3 +126,9 @@
 
 </body>
 </html>
+<?php
+if(isset($_GET['error'])) {
+    if ($_GET['error'] == "csrfError") {
+        echo "<div class='errordiv'>Forma nije submitovana na odgovarajući način</div>";
+    }
+}

@@ -3,6 +3,7 @@ session_start();
 if(isset($_POST['signup-submit'])){
 
     require '../config/dbconfig.php';
+    require_once '../utils/csrf.php';
 
 
     $username=$_POST['uid'];
@@ -11,7 +12,11 @@ if(isset($_POST['signup-submit'])){
     $passwordRepeat=$_POST['pwd-repeat'];
     $captcha=$_POST['captcha'];
 
-    if(empty($username) || empty($email) || empty($password) || empty($passwordRepeat)|| empty($captcha)){
+    if (!checkCsrf()){
+        header('Location: ../signup.php?error=csrfError');
+        exit();
+    }
+    elseif(empty($username) || empty($email) || empty($password) || empty($passwordRepeat)|| empty($captcha)){
         header("Location: ../signup.php?error=emptyfields&uid=".$username."&mail=".$email);
         exit();
     }
