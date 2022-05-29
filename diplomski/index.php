@@ -212,10 +212,10 @@ if(isset($_POST['search'])){
                     <?php
                     echo "<div class=\"carousel-item active\">";
                     $sql_select="SELECT * FROM news WHERE newstype='srbija' AND important_news=1 AND approved=1 ORDER BY id DESC LIMIT 1";
-                    $result = mysqli_query($connection,$sql_select);
+                    $result = $pdo->query($sql_select);
 
-                    if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                    if ($result->rowCount() > 0) {
+                        while ($row = $result->fetch()) {
                             $id=$row["id"];
                             echo '<a  href="news.php?id='.$id.'">';
                             echo "<img class=\"d-block w-100\"  alt=\"".$row['alt']."\" src=\"".$row['images']."\">";
@@ -232,10 +232,10 @@ if(isset($_POST['search'])){
                     function carousel($sql_select){
                         echo "<div class=\"carousel-item \">";
                         echo " <a href=\"http://www.google.com\">";
-                        global $connection;
-                        $result = mysqli_query($connection,$sql_select);
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                        global $pdo;
+                        $result = $pdo->query($sql_select);
+                        if ($result->rowCount() > 0) {
+                            while ($row = $result->fetch()) {
                                 $id=$row["id"];
                                 echo '<a  href="news.php?id='.$id.'">';
                                 echo "<img class=\"d-block w-100\"  alt=\"".$row['alt']."\" src=\"".$row['images']."\">";
@@ -281,11 +281,11 @@ if(isset($_POST['search'])){
 
                     <?php
                     $sql = "SELECT * FROM news WHERE approved=1 ORDER BY id DESC LIMIT 0,5";
-                    $result = mysqli_query($connection, $sql);
 
-                    if (mysqli_num_rows($result) > 0) {
+                    $result = $pdo->query($sql);
+                    if ($result->rowCount() > 0) {
                         // output data of each row
-                        while($row = mysqli_fetch_assoc($result)) {
+                        while($row = $result->fetch()) {
                             $id=$row["id"];
                             echo '<a href="news.php?id='.$id.'">'.$row["title"].'</a>';
                         }
@@ -298,11 +298,11 @@ if(isset($_POST['search'])){
             <div class="tab-pane fade" id="nav-najpregledanije" role="tabpanel" aria-labelledby="nav-najpregledanije-tab">
                 <?php
                 $sql = "SELECT * FROM news WHERE approved=1 ORDER BY cookie_count DESC LIMIT 0,5";
-                $result = mysqli_query($connection, $sql);
+                $result = $pdo->query($sql);
 
-                if (mysqli_num_rows($result) > 0) {
+                if ($result->rowCount() > 0) {
                     // output data of each row
-                    while($row = mysqli_fetch_assoc($result)) {
+                    while($row = $result->fetch()) {
                         $id=$row["id"];
                         echo '<a href="news.php?id='.$id.'">'.$row["title"].'<div style="float: right">'.$row["cookie_count"].'&nbsp;<i class="far fa-eye"></i></div>'.'</a>';
                     }
@@ -330,11 +330,11 @@ if(isset($_POST['search'])){
 
                <?php
                     $sql = "SELECT * FROM news  WHERE approved=1   ORDER BY id DESC LIMIT 5,3";
-                    $result = mysqli_query($connection, $sql);
+                    $result = $pdo->query($sql);
 
-                    if (mysqli_num_rows($result) > 0) {
+                    if ($result->rowCount() > 0) {
                         // output data of each row
-                        while($row = mysqli_fetch_assoc($result)) {
+                        while($row = $result->fetch()) {
                             echo  "<div class='card'>";
                             echo "<img class='card-img-top cardss img-fluid' alt=\"".$row['alt']."\" src=\"".$row['images']."\">"."</a>";
                     echo  "<div class='card-body'>";
@@ -357,11 +357,11 @@ if(isset($_POST['search'])){
        echo "<div class='card-deck'>";
 
                 $sql = "SELECT * FROM news  WHERE approved=1   ORDER BY id DESC LIMIT 8,3";
-                $result = mysqli_query($connection, $sql);
 
-                if (mysqli_num_rows($result) > 0) {
+                $result = $pdo->query($sql);
+                if ($result->rowCount() > 0) {
                     // output data of each row
-                    while($row = mysqli_fetch_assoc($result)) {
+                    while($row = $result->fetch()) {
                         echo  "<div class='card'>";
                         echo "<img class='card-img-top cardss img-fluid' alt=\"".$row['alt']."\" src=\"".$row['images']."\">"."</a>";
                         echo  "<div class='card-body'>";
@@ -400,8 +400,8 @@ if(isset($_POST['search'])){
         //defining how many results we want per page
         $results_per_page=6;
             $sql = "SELECT title,images,caption,alt,newstype FROM news  WHERE approved=1  ORDER BY id DESC";
-            $result = mysqli_query($connection, $sql);
-            $number_of_results=mysqli_num_rows($result);
+            $result = $pdo->query($sql);
+            $number_of_results=$result->rowCount();
 
         //determine number of total pages available
           $number_of_pages=ceil($number_of_results/$results_per_page);
@@ -414,12 +414,14 @@ if(isset($_POST['search'])){
         //determine the sql LIMIT starting number for the results on the displaying page
          $this_page_first_result=($page-1)*$results_per_page;
         //retrieve selected results from database and display them on the page
-        $sql = "SELECT * FROM news  WHERE approved=1   ORDER BY id DESC
-LIMIT " .$this_page_first_result.','.$results_per_page;
-        $result = mysqli_query($connection, $sql);
-        $number_of_results=mysqli_num_rows($result);
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
+        $sql = "SELECT * FROM news  WHERE approved=1 ORDER BY id DESC LIMIT ?, ?";
+
+        $result = $pdo->prepare($sql);
+        $result->execute([$this_page_first_result, $results_per_page]);
+
+        $number_of_results = $result->rowCount();
+        if ($number_of_results > 0) {
+            while ($row = $result->fetch()) {
 
                 echo "<div class=\"horizontalCard card horizdiv\">";
                 echo "<div class=\"row horizcontentdiv\">";
