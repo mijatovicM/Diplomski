@@ -163,32 +163,6 @@ if(isset($_POST['komentarisi']) ) {
 
             echo "</div>";
 
-            if(isset($_SESSION['userId'])) {
-                $userid=$_SESSION['userId'];
-                echo '<div style="text-align: center;margin-top: 2%"/>';
-            $sql = "SELECT * FROM saved_news WHERE id='$id' AND users_id='$userid'";
-            $result = mysqli_query($connection, $sql);
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                    echo "<button class='btn btn-secondary' onClick='savenews($id)' name='save' style='display: none;'>Sačuvajte vest na svom profilu <i class=\"fas fa-bookmark\"></i></button> &nbsp;";
-                    save();
-                }
-            }
-            else{
-                echo "<button class='btn btn-secondary' onClick='savenews($id)' name='save'>Sačuvajte vest na svom profilu <i class=\"fas fa-bookmark\"></i></button> &nbsp;";
-                save();
-            }
-
-                echo "</div>";
-                $sql = "SELECT * FROM news WHERE id='$id'";
-                $result = mysqli_query($connection, $sql);
-                if (mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-
-                    }
-                }
-            }
-
 
             if(!isset($_SESSION['userId']) ){
                 echo '<div style="text-align: center;margin-top: 2%">';
@@ -255,17 +229,7 @@ if(isset($_POST['komentarisi']) ) {
 
             function save(){?>
                 <!-- Javascript function for deleting news -->
-                <script language="javascript">
-                    function savenews(savenewsid)
-                    {
-                        if(confirm("Da li želite da sačuvate ovu vest na svom profilu?")){
-                            window.location.href='savenews.php?savenews_id=' +savenewsid+'';
-                            alert('Uspešno ste sačuvali ovu vest na svoj profil');
-                            return true;
-                        }
-                    }
 
-                </script>
             <?php }
 
             function like(){?>

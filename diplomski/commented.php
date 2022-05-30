@@ -68,17 +68,18 @@ include_once("admin/functions.php");
     </script>
     <?php
             //defining how many results we want per page
-    global $connection;
+    global $pdo;
             $results_per_page=6;
     if (isset($_SESSION['userId'])) {
         $nickname = $_SESSION['userUid'];
         echo '<div class="commentsection" style="position: relative; min-height: 100%;">';
 
-        $sql = "SELECT * FROM comments WHERE nickname='$nickname' ORDER BY comments_id DESC";
-        $result = mysqli_query($connection, $sql) or die(mysqli_error($connection));
-        if (mysqli_num_rows($result) > 0) {
+        $sql = "SELECT * FROM comments WHERE nickname=? ORDER BY comments_id DESC";
+        $result = $pdo->prepare($sql);
+        !$result->execute([$nickname]) ? die($result->errorInfo()): false;
+        if ($result->rowCount() > 0) {
 
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            while ($row = $result->fetch()) {
 
                 $originalDate = $row['timeofcomment'];
                 $newDate = date("d.m.Y H:i", strtotime($originalDate));

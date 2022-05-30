@@ -76,11 +76,12 @@ include_once("admin/functions.php");
 
         $id = $_GET['id'];
 
-        $sql="SELECT * FROM comments WHERE approved=1 AND id='$id' ORDER BY comments_id DESC";
-        $result=mysqli_query($connection,$sql)or die(mysqli_error($connection));
-        if(mysqli_num_rows($result)>0){
+        $sql="SELECT * FROM comments WHERE approved=1 AND id=? ORDER BY comments_id DESC";
+        $result = $pdo->prepare($sql);
+        !$result->execute([$id]) ? die($result->errorInfo()) : false;
+        if($result->rowCount() > 0){
 
-            while ($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
+            while ($row = $result->fetch()){
 
                 $originalDate =  $row['timeofcomment'];
                 $newDate = date("d.m.Y H:i", strtotime($originalDate));

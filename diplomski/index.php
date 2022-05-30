@@ -134,10 +134,6 @@ if(isset($_POST['search'])){
                     </form>
                 </div>
 
-            <a href="usernews.php"><div style="float: right;width: 50%;">
-                    Vesti naših korisnika
-                </div></a>
-
         </div>
         <?php
         if($_POST) {

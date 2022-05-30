@@ -118,13 +118,14 @@ if(!isset($_SESSION['userId']) || $_SESSION['userType'] == 'korisnik' || $_SESSI
     <select id="search" name="search[]" multiple class="form-control" >
 
         <?php
-        global $connection;
+        global $pdo;
         $sql = "SELECT DISTINCT hashtags FROM hashtags ORDER BY hashtags_id";
-        $result = mysqli_query($connection, $sql);
+        $result = $pdo->query($sql);
+        var_dump($pdo->errorInfo());
 
-        if (mysqli_num_rows($result) > 0) {
+        if ($result->rowCount() > 0) {
             // output data of each row
-            while($row = mysqli_fetch_assoc($result)) {
+            while($row = $result->fetch()) {
                 echo "<option>".$row['hashtags']."</option>";
             }
         } else {
@@ -219,19 +220,30 @@ if(!isset($_SESSION['userId']) || $_SESSION['userType'] == 'korisnik' || $_SESSI
 
         $error = NULL;
         if (!$error) {
-            global $connection;
+            global $pdo;
 
 
             $output_dir = "src/images/";
 
-            $query = mysqli_query($connection, "INSERT INTO news (title,caption,images,alt,timeofinsert,newstype,content,important_news,approved,creator,creatorname,cookie_count) VALUES ('$title','$caption','$output_dir$imageNameNew','$alt',NOW(),'$newstype','$text',$important_news,0,'urednik','$creatorname',0)");
+//            $query = "INSERT INTO news (title,caption,images,alt,timeofinsert,newstype,content,important_news,approved,creator,creatorname,cookie_count) VALUES (?,?,?,?,NOW(),?,?,?,0,'urednik',?,0)";
 
-            if ($query) {
-                $last_id = mysqli_insert_id($connection);
+            $query = "INSERT INTO news (title,caption,images,alt,timeofinsert,newstype,content,important_news,approved,creator,creatorname,cookie_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+            $result = $pdo->prepare($sql);
+
+            $temp = $output_dir.$imageNameNew;
+            $a = 0;
+            $b = 'urednik';
+            $c = 0;
+            $now = date("Y-m-d H:i:s");
+            if ($result->execute([$title,$caption,$temp,$alt,$now, $a, $newstype,$text,$important_news,$b, $creatorname, $c])) {
+//            if ($result->execute([$title,$caption,$temp,$alt,$newstype,$text,$important_news,$creatorname])) {
+                $last_id = $pdo->lastInsertId();
                 echo  '<script>location.replace("createnews.php?success=newssuccess");</script>';
 
             } else {
-                echo  '<script>location.replace("createnews.php?error=errornews");</script>';
+                var_dump($result->errorInfo());
+//                echo  '<script>location.replace("createnews.php?error=errornews");</script>';
             }
 
 //pravljenje niza od stringa, a zatim izvlacenje svake vrednosti iz niza i upisivanje u bazu
@@ -242,24 +254,29 @@ if(!isset($_SESSION['userId']) || $_SESSION['userType'] == 'korisnik' || $_SESSI
    /*for petlja se vrti onoliko puta koliko ima hashtagova, i svaki put u promenljivu $hashtag stavlja novu vrednost iz niza*/
             for($i=0;$i<$number_of_hashtags;$i++) {
                 $hashtag = $exploded_hashtags[$i];
-                $sql = "SELECT * FROM hashtags WHERE hashtags='$hashtag'";
-                $result = mysqli_query($connection, $sql);
-                if (mysqli_num_rows($result) > 0) {
+                $sql = "SELECT * FROM hashtags WHERE hashtags=?";
+                $result = $pdo->prepare($sql);
+                $result->execute([$hashtag]);
+
+                if ($result->rowCount() > 0) {
                     // output data of each row
-                    while ($row = mysqli_fetch_assoc($result)) {
+                    while ($row = $result->fetch()) {
                         echo "";
                     }
-                } elseif (mysqli_num_rows($result) == 0) {
-                    $query = mysqli_query($connection, "INSERT INTO hashtags (hashtags) VALUES ('$hashtag')");
-                    if ($query) {
-                        $sql = "SELECT * FROM hashtags WHERE hashtags='$hashtag'";
-                        $result = mysqli_query($connection, $sql);
-                        if (mysqli_num_rows($result) > 0) {
+                } elseif ($result->rowCount() == 0) {
+                    $sql = "INSERT INTO hashtags (hashtags) VALUES (?)";
+                    $result = $pdo->prepare($sql);
+                    if ($result->execute([$hashtag])) {
+                        $sql = "SELECT * FROM hashtags WHERE hashtags=?";
+                        $result = $pdo->prepare($sql);
+                        $result->execute([$hashtag]);
+                        if ($result->rowCount() > 0) {
                             // output data of each row
-                            while ($row = mysqli_fetch_assoc($result)) {
+                            while ($row = $result->fetch()) {
                                 $hashtags_id = $row['hashtags_id'];
-                                $query = mysqli_query($connection, "INSERT INTO hashtags_middle_table (hashtags_id,id) VALUES ('$hashtags_id','$last_id')");
-
+                                $sql = "INSERT INTO hashtags_middle_table (hashtags_id,id) VALUES (?,?)";
+                                $result = $pdo->prepare($sql);
+                                $result->execute([$hashtags_id, $last_id]);
                             }
                         }
                     }
@@ -271,13 +288,16 @@ if(!isset($_SESSION['userId']) || $_SESSION['userType'] == 'korisnik' || $_SESSI
         if(isset($_POST['search'])){
             $search = $_POST['search'];
             foreach ($search as $search_temp) {
-                $sql = "SELECT * FROM hashtags WHERE hashtags='$search_temp'";
-                $result = mysqli_query($connection, $sql);
-                if (mysqli_num_rows($result) > 0) {
+                $sql = "SELECT * FROM hashtags WHERE hashtags=?";
+                $result = $pdo->prepare($sql);
+                $result->execute([$search_temp]);
+                if ($result->rowCount() > 0) {
                     // output data of each row
-                    while ($row = mysqli_fetch_assoc($result)) {
+                    while ($row = $result->fetch()) {
                         $hashtags_id = $row['hashtags_id'];
-                        $query = mysqli_query($connection, "INSERT INTO hashtags_middle_table (hashtags_id,id) VALUES ('$hashtags_id',$last_id)");
+                        $sql = "INSERT INTO hashtags_middle_table (hashtags_id,id) VALUES (?,?)";
+                        $result = $pdo->prepare($sql);
+                        $result->execute([$hashtags_id, $last_id]);
                     }
                 } else {
                     echo "0 results";

@@ -91,12 +91,13 @@ include_once("admin/functions.php");
                                 echo "</tr>";
 
 
-                                $sql="SELECT * FROM users WHERE users_id='$userid'";
+                                $sql="SELECT * FROM users WHERE users_id=?";
 
-                                $result=mysqli_query($connection,$sql)or die(mysqli_error($connection));
-                                if(mysqli_num_rows($result)>0){
+                                $result=$pdo->prepare($sql);
+                                $result->execute([$userid]);
+                                if($result->rowCount() > 0){
 
-                                    while ($row=mysqli_fetch_array($result,MYSQLI_ASSOC)) {
+                                    while ($row=$result->fetch()) {
 
                                         $username = $row['username'];
                                         $email = $row['email'];
@@ -104,13 +105,15 @@ include_once("admin/functions.php");
                                         $id=$row['users_id'];
                                         echo "<tr>";
 
-                                            $query=mysqli_query($connection,"SELECT * FROM users WHERE username='$username'");
-                                            $row=mysqli_fetch_array($query);
+                                            $sql = "SELECT * FROM users WHERE username=?";
+                                            $result=$pdo->prepare($sql);
+                                            $result->execute([$username]);
+                                            $row = $result->fetch();
                                             echo "<td><textarea rows=\"1\" cols=\"30\" name=\"username\">";
                                             echo $username;
                                             echo "</textarea></td>";
                                             echo "<td><button style='margin-top: 3%' class='btn btn-info' type='submit'>Ažuriraj</button> </td>";
-                                        usernameupdate($connection);
+                                        usernameupdate($pdo);
                                         ?>
                                         <input type="hidden" name="id" value="<?= $userid ?>"/>
                                         <?php
@@ -121,7 +124,7 @@ include_once("admin/functions.php");
                                     }}
 
 
-function usernameupdate($connection)
+function usernameupdate($pdo)
 {
     if (isset($_POST['username'])) {
         $editorUsername = $_POST['username'];
@@ -129,17 +132,19 @@ function usernameupdate($connection)
         $id = $_POST['id'];
         include "config/dbconfig.php";
 
-        $sql = "SELECT * FROM users WHERE username='$editorUsername'";
-        $result = mysqli_query($connection, $sql);
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        $sql = "SELECT * FROM users WHERE username=?";
+        $result=$pdo->prepare($sql);
+        $result->execute([$editorUsername]);
+        if ($result->rowCount() > 0) {
+            while ($row = $result->fetch()) {
                 exit ('<script> location.replace("changeinfo.php?error=usernameexist");</script>');
 
             }
         }
 
-        $query = mysqli_query($connection, "UPDATE users SET username='$editorUsername' WHERE users_id='$id'");
-        if ($query) {
+        $sql = "UPDATE users SET username=? WHERE users_id=?";
+        $result = $pdo->prepare($sql);
+        if ($result->execute([$editorUsername, $id])) {
             echo '<script> location.replace("index.php?success=changed");</script>';
             session_destroy();
         } else {
@@ -196,11 +201,12 @@ function usernameupdate($connection)
 
 
         if (isset($_POST['submit_password'])) {
-            $sql = "SELECT * FROM users WHERE username='$username'";
+            $sql = "SELECT * FROM users WHERE username=?";
 
-            $result = mysqli_query($connection, $sql) or die(mysqli_error($connection));
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            $result = $pdo->prepare($sql);
+            $result->execute([$username]) ? False : die($result->errorInfo());
+            if ($result->rowCount() > 0) {
+                while ($row = $result->fetch()) {
                     $get_pass = $row['password'];
                     $pwdCheck = password_verify($currentpassword, $row['password']);
                     $newPwd=password_hash($newpassword, PASSWORD_DEFAULT);
@@ -208,7 +214,9 @@ function usernameupdate($connection)
                     if ($pwdCheck == $get_pass) {
                         if (strlen($newpassword) >= 6) {
                             if ($confirmpassword == $newpassword) {
-                                $sql = mysqli_query($connection, "UPDATE users SET password='$newPwd' WHERE username='$username'");
+                                $sql = "UPDATE users SET password=? WHERE username=?";
+                                $result = $pdo->prepare($sql);
+                                !$result->execute([$newPwd, $username]) ? die($result->errorInfo()) : true;
                                 echo '<script>location.replace("changeinfo.php?success=passwordchanged");</script>';
                             }
                             else {
@@ -232,10 +240,11 @@ function usernameupdate($connection)
                 <th style="text-align: center !important;">Newsletter</th>
                 <td style="text-align: center !important;">
                     <?php
-                    $sql = "SELECT * FROM users WHERE users_id='$userid'";
-                    $result = mysqli_query($connection, $sql);
-                    if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_assoc($result)) {
+                    $sql = "SELECT * FROM users WHERE users_id=?";
+                    $result = $pdo->prepare($sql);
+                    $result->execute([$userid]);
+                    if ($result->rowCount() > 0) {
+                        while ($row = $result->fetch()) {
                             $newsletter=$row['newsletter'];
                             if($newsletter=='no') {
                                 echo ' <button type="submit" class="btn btn-info" name="newsletteryes">Prijavi se</button>';
@@ -255,14 +264,17 @@ function usernameupdate($connection)
     <?php
     if(isset($_POST['newsletteryes'])) {
         $newsletteryes = $_POST['newsletteryes'];
-        $select = "UPDATE users SET newsletter='yes' WHERE users_id='$userid'";
-        $query = mysqli_query($connection, $select) or die($select);
+        $sql = "UPDATE users SET newsletter='yes' WHERE users_id=?";
+        $result = $pdo->prepare($sql);
+        $result->execute([$userid]);
+        $result ? false : die($result->errorInfo());
         echo "<script>location.replace('changeinfo.php?success=newsletteryes');</script>";
     }
     elseif(isset($_POST['newsletterno'])) {
         $newsletterno = $_POST['newsletterno'];
-        $select = "UPDATE users SET newsletter='no' WHERE users_id='$userid'";
-        $query = mysqli_query($connection, $select) or die($select);
+        $sql = "UPDATE users SET newsletter='no' WHERE users_id=?";
+        $result = $pdo->prepare($sql);
+        !$result->execute([$userid]) ? die($result->errorInfo()): false;
         echo "<script>location.replace('changeinfo.php?success=newsletterno');</script>";
     }
     ?>

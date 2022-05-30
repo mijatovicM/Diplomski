@@ -6,6 +6,8 @@ $news_id=$_GET['likenews_id'];
 
 include_once("config/dbconfig.php");
 global $connection;
+# dodati proveru da li postoji vise korisnika sa istim lajkom
+# script name u headeru ime fajla
 $sql = "INSERT INTO liked_news(users_id,username,id) VALUES ('$userid','$username','$news_id')";
 $result = mysqli_query($connection, $sql) or die($sql);
 

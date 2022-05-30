@@ -68,10 +68,7 @@
                         echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="commented.php">Komentarisane vesti</a></div>
                     <hr style="border-color:#808080 "/>';
                         echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="saved.php">Sačuvane vesti</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="liked.php">Lajkovane vesti</a></div>
+                    
                     <hr style="border-color:#808080 "/>';
 
 
@@ -83,14 +80,10 @@
                         echo '<div class="loggedInMessageDiv" style="width:250px;text-align: center;"><p class="loggedInMessage">Urednik: '.$_SESSION['userUid']. '</p></div><hr style="border-color:#808080 "/>';
 
                         echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="commented.php">Komentarisane vesti</a></div>
-                    <hr style="border-color:#808080 "/>
-                    <div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="createnews.php">Napravite novu vest</a></div>
+              
                     <hr style="border-color:#808080 "/>;
                     <div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="saved.php">Sačuvane vesti</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="liked.php">Lajkovane vesti</a></div>
+                   
                     <hr style="border-color:#808080 "/>';
 
 
@@ -101,14 +94,10 @@
                         echo '<div class="loggedInMessageDiv" style="width:250px;text-align: center;"><p class="loggedInMessage">Korisnik: '.$_SESSION['userUid']. '</p></div><hr style="border-color:#808080 "/>';
 
                         echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="commented.php">Komentarisane vesti</a></div>
-                    <hr style="border-color:#808080 "/>
-                    <div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="usercreatenews.php">Pošaljite svoju vest</a></div>
+                    
                     <hr style="border-color:#808080 "/>;
                     <div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="saved.php">Sačuvane vesti</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="liked.php">Lajkovane vesti</a></div>
+                   
                     <hr style="border-color:#808080 "/>';
                     }
 
