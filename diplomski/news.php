@@ -5,18 +5,20 @@ include_once("config/dbconfig.php");
 include_once("admin/functions.php");
 global $connection;
 $id = $_GET['id'];
-$id = mysqli_real_escape_string($connection,$id);
     include_once("config/dbconfig.php");
     global $connection;
-    $sql = "SELECT * FROM news WHERE id='$id' ";
-    $result = mysqli_query($connection, $sql);
+    $sql = "SELECT * FROM news WHERE id=$id ";
+    $result = $pdo->prepare($sql);
+    $result->execute([$id]);
 
-    if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
+    if ($result->rowCount() > 0) {
+        while($row = $result->fetch()) {
             if(!isset($_COOKIE['count'.$id])){
                 $content=$row["cookie_count"];
                 $val=$content+1;
-                $query = mysqli_query($connection, "UPDATE news SET cookie_count='$val' WHERE id='$id'");
+                $sql = "UPDATE news SET cookie_count=? WHERE id=?";
+                $result = $pdo->prepare($sql);
+                $result->execute([$val, $id]);
                 setcookie("count".$id,$val,time()+600);
             }
 
@@ -119,11 +121,11 @@ if(isset($_POST['komentarisi']) ) {
             global $connection;
 
             $id = $_GET['id'];
-            $id = mysqli_real_escape_string($connection,$id);
-            $sql = "SELECT * FROM news WHERE `id`='" . $id . "'";
-            $result = mysqli_query($connection,$sql);
+            $sql = "SELECT * FROM news WHERE id=?";
+            $result = $pdo->prepare($sql);
+            $result->execute([$id]);
 
-            while($row = mysqli_fetch_array($result)) {
+            while($row = $result->fetch()) {
                 echo "<br>";
                 echo "<div class='news'>";
                 echo $row['content'];
@@ -136,11 +138,12 @@ if(isset($_POST['komentarisi']) ) {
                 echo "<p style='font-size: 17px'>".$row['cookie_count']."&nbsp<i class=\"far fa-eye\" style='color: #4B250F'></i>&nbsp&nbsp&nbsp";
             }
 
-            $sql = "SELECT * FROM liked_news WHERE id='$id';";
-            $result = mysqli_query($connection,$sql);
+            $sql = "SELECT * FROM liked_news WHERE id=?;";
+            $result = $pdo->prepare($sql);
+            $result->execute([$id]);
 
-            if($row = mysqli_fetch_array($result)) {
-                $num_rows = mysqli_num_rows($result);
+            if($row = $result->fetch()) {
+                $num_rows = $result->rowCount();
                 echo $num_rows."&nbsp<i class=\"far fa-thumbs-up\" style='color: #1e6eff'></i></p> ";
             }
             else{
@@ -150,8 +153,8 @@ if(isset($_POST['komentarisi']) ) {
             //SELECT news.id, news.title, news.caption, news.images, news.alt, news.newstype
            // FROM news INNER JOIN hashtags ON news.id=hashtags.id WHERE hashtags.hashtags='$hashtag'
             $sql = "SELECT * FROM hashtags h INNER JOIN hashtags_middle_table m  ON h.hashtags_id = m.hashtags_id INNER JOIN news n ON m.id = n.id ";
-            $result = mysqli_query($connection,$sql);
-            while($row = mysqli_fetch_array($result)) {
+            $result = $pdo->query($sql);
+            while($row = $result->fetch()) {
                 if($row['id']==$id) {
 
                     $hashtags = $row['hashtags'];
@@ -174,10 +177,11 @@ if(isset($_POST['komentarisi']) ) {
             elseif(isset($_SESSION['userId'])) {
                 $userid=$_SESSION['userId'];
                 echo '<div style="text-align: center;margin-top: 2%"/>';
-                $sql = "SELECT * FROM liked_news WHERE id='$id' AND users_id='$userid'";
-                $result = mysqli_query($connection, $sql);
-                if (mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                $sql = "SELECT * FROM liked_news WHERE id=? AND users_id=?";
+                $result = $pdo->prepare($sql);
+                $result->execute([$id, $userid]);
+                if ($result->rowCount() > 0) {
+                    while ($row = $result->fetch()) {
 
                         echo "<button class='btn btn-info' onClick='likenews($id)' name='like' style='display: none;'>Sviđa mi se <i class=\"far fa-thumbs-up\"></i></button> &nbsp;";
                         like();
@@ -189,13 +193,6 @@ if(isset($_POST['komentarisi']) ) {
                 }
 
                 echo "</div>";
-                $sql = "SELECT * FROM news WHERE id='$id'";
-                $result = mysqli_query($connection, $sql);
-                if (mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-
-                    }
-                }
             }
 
 
@@ -212,10 +209,11 @@ if(isset($_POST['komentarisi']) ) {
                 echo "<a href='admin/updateimage.php?id=$id' class='btn btn-primary'>Izmenite sliku <i class=\"far fa-images\"></i></a> &nbsp;";
 
                 echo "</div>";
-                $sql = "SELECT * FROM news WHERE id='$id'";
-                $result = mysqli_query($connection, $sql);
-                if (mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
+                $sql = "SELECT * FROM news WHERE id=?";
+                $result = $pdo->prepare($sql);
+                $result->execute([$id]);
+                if ($result->rowCount() > 0) {
+                    while ($row = $result->fetch()) {
                         if ($row['important_news'] == 1) {
                             echo "<div class='important'>Bitna vest</div>";
                         } elseif ($row['important_news'] == 0) {
@@ -276,11 +274,11 @@ if(isset($_POST['komentarisi']) ) {
             <p>Najnovije</p>
             <?php
                 $sql = "SELECT * FROM news WHERE approved=1 ORDER BY id DESC LIMIT 0,12";
-                $result = mysqli_query($connection, $sql);
+                $result = $pdo->query($sql);
 
-                if (mysqli_num_rows($result) > 0) {
+                if ($result->rowCount() > 0) {
                     // output data of each row
-                    while($row = mysqli_fetch_assoc($result)) {
+                    while($row = $result->fetch()) {
                         $id=$row["id"];
                         echo '<a href="news.php?id='.$id.'">'.$row["title"].'</a>';
                     }
@@ -329,17 +327,11 @@ if(isset($_POST['komentarisi']) ) {
                 $user_input = $_POST['user_input'];
                 $user_input_new = str_ireplace($find, $replace, $user_input);
 
+            $sql = "INSERT INTO comments (nickname,comments,approved,id,timeofcomment) VALUES (?,?,0,?,NOW())";
+            $result = $pdo->prepare($sql);
+            $result->execute([$nickname, $user_input_new, $id]);
 
-            $query = mysqli_query($connection, "INSERT INTO comments (nickname,comments,approved,id,timeofcomment) VALUES ('$nickname','$user_input_new',0,'$id',NOW())");
-            mysqli_query($connection,$query);
-
-
-
-
-
-
-
-                }
+            }
         }
         }
 
@@ -354,11 +346,12 @@ if(isset($_POST['komentarisi']) ) {
 
         $id = $_GET['id'];
 
-        $sql="SELECT * FROM comments WHERE approved=1 AND id='$id' ORDER BY comments_id DESC LIMIT 0,5";
-        $result=mysqli_query($connection,$sql)or die(mysqli_error($connection));
-        if(mysqli_num_rows($result)>0){
+        $sql="SELECT * FROM comments WHERE approved=1 AND id=? ORDER BY comments_id DESC LIMIT 0,5";
+        $result=$pdo->prepare($sql);
+        $result->execute([$id]);
+        if($result->rowCount() > 0){
 
-            while ($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
+            while ($row=$result->fetch()){
 
                 $originalDate =  $row['timeofcomment'];
                 $newDate = date("d.m.Y H:i", strtotime($originalDate));
