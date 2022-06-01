@@ -42,11 +42,12 @@
 include_once("../config/dbconfig.php");
 global $connection;
 if (isset($_POST["forgotPassword"])) {
-    $email = mysqli_real_escape_string($connection, $_POST["forgotPassword"]);
-    $sql_select = "SELECT users_id FROM `users` WHERE email = '".$email."'";
-    $result = mysqli_query($connection, $sql_select);
+    $email = $_POST["forgotPassword"];
+    $sql = "SELECT users_id FROM `users` WHERE email = ?";
+    $result = $pdo->prepare($sql);
+    $result->execute([$email]);
 
-    if (mysqli_num_rows($result) > 0) {
+    if ($result->rowCount() > 0) {
       $str = "03565emikmtroimfweo324o0-tkerkm235_214rffhgkl";
       $str = str_shuffle($str);
       $str = substr($str, 0,10);
@@ -54,7 +55,9 @@ if (isset($_POST["forgotPassword"])) {
       $url = "http://".$current_path."resetPassword.php?token=$str&email=$email";
       mail($email, "Povrat Lozinke", "Za resetovanje Vase sifre, kliknite na sledeci link: $url", "From: izvestavajme@gmail.com\r\n");
       $sql_update = "UPDATE `users` SET Token ='".$str."' WHERE email = '".$email."'";
-      mysqli_query($connection, $sql_update);
+      $sql = "UPDATE `users` SET Token =? WHERE email = ?";
+      $result = $pdo->prepare($sql);
+      $result->execute([$str, $email]);
 
       echo " <div class=\"commentedh1\" style=\"margin-top: 20%;width: 85%;font-size: 40px\">
                 <h1 >Za resetovanje lozinke, kliknite na link koji Vam je poslat na e-mail !

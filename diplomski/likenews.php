@@ -8,10 +8,13 @@ include_once("config/dbconfig.php");
 global $connection;
 # dodati proveru da li postoji vise korisnika sa istim lajkom
 # script name u headeru ime fajla
-$sql = "INSERT INTO liked_news(users_id,username,id) VALUES ('$userid','$username','$news_id')";
-$result = mysqli_query($connection, $sql) or die($sql);
+$sql = "INSERT INTO liked_news(users_id,username,id) VALUES (?, ?, ?)";
 
-if(mysqli_num_rows($result2)==0) {
+$result = $pdo->prepare($sql);
+!$result->execute([$userid, $username, $news_id]) ? die($result->errorInfo()) : false;
+
+
+if($result->rowCount() > 0) {
 
     header("Location: news.php?id=$news_id");
 }

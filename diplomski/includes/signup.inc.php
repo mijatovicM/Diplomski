@@ -50,81 +50,63 @@ if(isset($_POST['signup-submit'])){
     else{
         global $connection;
         $sql="SELECT username FROM users WHERE username=?";
-        $stmt=mysqli_stmt_init($connection);
-        if(!mysqli_stmt_prepare($stmt,$sql)){
-            header("Location: ../signup.php?error=sqlerror");
+        $result = $pdo->prepare($sql);
+        $result->execute([$username]);
+        $resultCheck=$result->rowCount();
+        if($resultCheck>0){
+            header("Location: ../signup.php?error=usertaken&mail=".$email);
             exit();
         }
         else{
-            mysqli_stmt_bind_param($stmt,"s",$username);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_store_result($stmt);
-            $resultCheck=mysqli_stmt_num_rows($stmt);
-            if($resultCheck>0){
-                header("Location: ../signup.php?error=usertaken&mail=".$email);
-                exit();
-            }
-            else{
-                $sql="INSERT INTO users(`username`,`email`,`password`,`type`) VALUES (?,?,?,'korisnik')";
-                $stmt=mysqli_stmt_init($connection);
-                if(!mysqli_stmt_prepare($stmt,$sql)){
-                    header("Location: ../signup.php?error=sqlerror");
-                    exit();
-                }
-                else{
-                    $hashedPwd=password_hash($password, PASSWORD_DEFAULT);
-                    mysqli_stmt_bind_param($stmt,"sss",$username,$email,$hashedPwd);
-                    mysqli_stmt_execute($stmt);
-                    $mdpass=md5($_POST['pwd']);
+            $sql="INSERT INTO users(`username`,`email`,`password`,`type`) VALUES (?,?,?,'korisnik')";
 
-                    $str = "03565emikmtroimfalsmhgzuxiucqnwdoweo324o0-tkerkm235_214rffhgkl";
-                    $str = str_shuffle($str);
-                    $str = substr($str, 0,32);
+            $hashedPwd=password_hash($password, PASSWORD_DEFAULT);
+            $result = $pdo->prepare($sql);
+            $result->execute([$username, $email, $hashedPwd]);
+
+            $str = "03565emikmtroimfalsmhgzuxiucqnwdoweo324o0-tkerkm235_214rffhgkl";
+            $str = str_shuffle($str);
+            $str = substr($str, 0,32);
+            $current_path = 'localhost/diplomski/';
+
+            $sql = "UPDATE `users` SET registerToken =? WHERE email = ?";
+            $result = $pdo->prepare($sql);
+            $result->execute([$str, $email]);
+
+            echo " <div class=\"hashtag\" style=\"margin-top: 20%;height:50vh;\">
+            <h1 >Za resetovanje lozinke, kliknite na link koji Vam je poslat na email !
+                
+            </h1>
+        </div>";
+
+
+
+              header("Location: ../signup.php?signup=success");
+                {
                     $current_path = 'localhost/diplomski/';
+                    $to      = $_POST["mail"];
+                    $subject = 'Registracija | Verifikacija';
+                    $message = '
 
-                    $sql_update = "UPDATE `users` SET registerToken ='".$str."' WHERE email = '".$email."'";
-                    mysqli_query($connection, $sql_update);
+    Hvala na registraciji!
+    Vas nalog je uspesno kreiran, mozete se prijaviti sa dole navedenim podacima nakon aktivacije naloga.
 
-                    echo " <div class=\"hashtag\" style=\"margin-top: 20%;height:50vh;\">
-                <h1 >Za resetovanje lozinke, kliknite na link koji Vam je poslat na email !
-                    
-                </h1>
-            </div>";
+    ------------------------------------
+    Korisnicko ime: '.$_POST["uid"].'
+    Lozinka: '.$_POST["pwd"].'
+    ------------------------------------
 
-
-
-                  header("Location: ../signup.php?signup=success");
-                    {
-                        $current_path = 'localhost/diplomski/';
-                        $to      = $_POST["mail"];
-                        $subject = 'Registracija | Verifikacija';
-                        $message = '
-
-        Hvala na registraciji!
-        Vas nalog je uspesno kreiran, mozete se prijaviti sa dole navedenim podacima nakon aktivacije naloga.
-
-        ------------------------------------
-        Korisnicko ime: '.$_POST["uid"].'
-        Lozinka: '.$_POST["pwd"].'
-        ------------------------------------
-
-        Kliknite na ovaj link kako biste aktivirali svoj nalog:
-       
-        http://'.$current_path. 'verify.php?email='.$_POST["mail"].'&token='.$str.'';
-                        $headers = 'From:izvestavajme@gmail.com' . "\r\n";
-                        mail($to, $subject, $message, $headers);
-                        echo "Uspesna registracija";
-                    }
-
-                    exit();
+    Kliknite na ovaj link kako biste aktivirali svoj nalog:
+   
+    http://'.$current_path. 'verify.php?email='.$_POST["mail"].'&token='.$str.'';
+                    $headers = 'From:izvestavajme@gmail.com' . "\r\n";
+                    mail($to, $subject, $message, $headers);
+                    echo "Uspesna registracija";
                 }
 
-
-            }
+                exit();
         }
     }
-    mysqli_stmt_close($stmt);
-    mysqli_close($connection);
 }
 else{
     header("Location: ../signup.php?");

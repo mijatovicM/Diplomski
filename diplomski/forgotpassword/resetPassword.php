@@ -50,13 +50,14 @@
 include_once("../config/dbconfig.php");
 global $connection;
   if (isset($_GET['email']) && isset($_GET['token'])) {
-    $email = mysqli_real_escape_string($connection, $_GET['email']);
-    $token = mysqli_real_escape_string($connection, $_GET['token']);
-
+      $email = $_GET['email'];
+      $token = $_GET['token'];
     $sql_select = "SELECT users_id FROM `users` WHERE email = '".$email."' AND Token = '".$token."'";
-    $result = mysqli_query($connection, $sql_select);
+    $sql = "SELECT users_id FROM `users` WHERE email = ? AND Token = ?";
+  $result = $pdo->prepare($sql);
+  $result->execute([$email, $token]);
 
-    if (mysqli_num_rows($result) > 0) {
+    if ($result->rowCount() > 0) {
       ?>
         <div class="registrationh1" style="margin-top: 10%">
             <h1 >Unesite novu lozinku
@@ -97,10 +98,12 @@ global $connection;
 
 
             $hashedPwd = password_hash($password, PASSWORD_DEFAULT);
-            $sql_update = "UPDATE `users` SET password = '" . $hashedPwd . "' WHERE email = '" . $email . "'";
-            $sql_update2 = "UPDATE `users` SET Token = '' WHERE email = '" . $email . "'";
-            mysqli_query($connection, $sql_update);
-            mysqli_query($connection, $sql_update2);
+            $sql = "UPDATE `users` SET password = ? WHERE email = ?";
+            $result = $pdo->prepare($sql);
+            $result->execute([$hashedPwd, $email]);
+            $sql = "UPDATE `users` SET Token = '' WHERE email = ?";
+            $result = $pdo->prepare($sql);
+            $result->execute([$email]);
             echo '<script>location.replace("http://localhost/diplomski/index.php?signup=success_forgot_password_change");</script>';
         }
     } else {

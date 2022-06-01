@@ -1,6 +1,20 @@
 <?php
 include_once("config/dbconfig.php");
 
+$categories = [
+    'sport',
+    'srbija',
+    'politika',
+    'poznati',
+    'svet',
+    'zabava'
+];
+
+if (isset($_GET['category']) and in_array($_GET['category'], $categories)){
+    $category = $_GET['category'];
+} else {
+  die('Invalid category');
+}
 //autocomplete part
 if(isset($_POST['search'])){
     $response= "<h6 class='searchBox'>Nema rezultata</h4 class='searchBoxNo'>";
@@ -49,7 +63,7 @@ if(isset($_POST['search'])){
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
     <style>
-        #poznati{
+        #<?=$category?>{
             background-color: #49505b;
             border-radius:6px 6px;
         }
@@ -69,6 +83,8 @@ if(isset($_POST['search'])){
 
         <div class="clearfix" id="firstwrapper" style="margin-right: 0%;margin-left: 0%; position: relative; z-index: 3; ">
             <!--Clearfix,quickly and easily clears floated content within a container.Easily clears floats by adding .clearfix to the parent element. -->
+
+
     <?php
     require "header.php";
     ?>
@@ -102,7 +118,7 @@ if(isset($_POST['search'])){
 
                 if(query.length>0){
                     $.ajax({
-                            url:'poznati.php',
+                            url:'srbija.php',
                             method:'POST',
                             data:{
                                 search:1,
@@ -129,12 +145,13 @@ if(isset($_POST['search'])){
     <div class="cardscontainer" style='margin: 2%;'>
         <div class="row">
             <?php
-            $sql = "SELECT * FROM news WHERE newstype='poznati'  AND approved=1  ORDER BY id DESC LIMIT 0,4 ";
-            $result = mysqli_query($connection, $sql);
+            $sql = "SELECT * FROM news WHERE newstype=?  AND approved=1  ORDER BY id DESC LIMIT 0,4 ";
+            $result = $pdo->prepare($sql);
+            $result->execute([$category]);
 
-            if (mysqli_num_rows($result) > 0) {
+            if ($result->rowCount() > 0) {
                 // output data of each row
-                while($row = mysqli_fetch_assoc($result)) {
+                while($row = $result->fetch()) {
                     echo  "<div class=\"col-xl-6\">";
                     echo "<img class=\"cardsimage\"  alt=\"".$row['alt']."\" src=\"".$row['images']."\">"."</a>";
                     echo  "<div class=\"cardstext\">";
@@ -148,8 +165,9 @@ if(isset($_POST['search'])){
             } else {
                 echo "0 results";
             }
-            //END OF 4 CARDS
 
+
+            //END OF 4 CARDS
 ?>
         </div>
     </div>
@@ -168,9 +186,9 @@ if(isset($_POST['search'])){
 
             //defining how many results we want per page
             $results_per_page=6;
-            $sql = "SELECT * FROM news WHERE newstype='poznati'  AND approved=1  ORDER BY id DESC";
-            $result = mysqli_query($connection, $sql);
-            $number_of_results=mysqli_num_rows($result);
+            $sql = "SELECT * FROM news WHERE newstype='srbija'  AND approved=1  ORDER BY id DESC";
+            $result = $pdo->query($sql);
+            $number_of_results=$result->rowCount();
 
             //determine number of total pages available
             $number_of_pages=ceil($number_of_results/$results_per_page);
@@ -183,11 +201,13 @@ if(isset($_POST['search'])){
             //determine the sql LIMIT starting number for the results on the displaying page
             $this_page_first_result=($page-1)*$results_per_page+4;
             //retrieve selected results from database and display them on the page
-            $sql = "SELECT * FROM news  WHERE newstype='poznati'  AND approved=1  ORDER BY id DESC LIMIT " .$this_page_first_result.','.$results_per_page;
-            $result = mysqli_query($connection, $sql);
-            $number_of_results=mysqli_num_rows($result);
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
+            $sql = "SELECT * FROM news  WHERE newstype='srbija'  AND approved=1  ORDER BY id DESC LIMIT " .$this_page_first_result.','.$results_per_page;
+            $sql = "SELECT * FROM news  WHERE newstype='srbija'  AND approved=1  ORDER BY id DESC LIMIT ?, ?";
+            $result = $pdo->prepare($sql);
+            $result->execute([$this_page_first_result, $results_per_page]);
+            $number_of_results=$result->rowCount();
+            if ($result->rowCount() > 0) {
+                while ($row = $result->fetch()) {
 
                     echo "<div class=\"horizontalCard card horizdiv\" style='margin: 2%;'>";
                     echo "<div class=\"row horizcontentdiv\">";
@@ -223,7 +243,7 @@ if(isset($_POST['search'])){
             echo "<ul class='justify-content-center pagination'>";
             if(isset($_GET['page'])) {
                 if ($_GET['page'] > 1) {
-                    echo "<li><a href='poznati.php?page=" . ($page - 1) . "'style='font-size: 25px;padding-top: 3%;'  class='button'><i class=\"fas fa-chevron-circle-left\"></i></a></li>";
+                    echo "<li><a href='srbija.php?page=" . ($page - 1) . "'style='font-size: 25px;padding-top: 3%;'  class='button'><i class=\"fas fa-chevron-circle-left\"></i></a></li>";
                 }}
             else echo "";
             if(!isset($_GET['page'])){
@@ -237,18 +257,18 @@ if(isset($_POST['search'])){
                     if($i==$page)
                         echo '<a class="active">'.$i.'</a>';
                     else
-                        echo '<a href="poznati.php?page='.$i.'">'.$i.'</a>';
+                        echo '<a href="srbija.php?page='.$i.'">'.$i.'</a>';
                 }
             }
             if($page>2 ) {
-                echo '<a class="active" href="poznati.php?page=' . $page . '">' . $page . '</a>';
+                echo '<a class="active" href="srbija.php?page=' . $page . '">' . $page . '</a>';
             }
             if(isset($_GET['page'])) {
                 if ($_GET['page'] < $number_of_pages) {
-                    echo "<li><a href='poznati.php?page=" . ($page + 1) . "' style='font-size: 25px;padding-top: 3%;' class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
+                    echo "<li><a href='srbija.php?page=" . ($page + 1) . "' style='font-size: 25px;padding-top: 3%;' class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
                 }}
             elseif (!isset($_GET['page'])){
-                echo "<li><a href='poznati.php?page=" . ($page + 1) . "'  style='font-size: 25px;padding-top: 3%;'  class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
+                echo "<li><a href='srbija.php?page=" . ($page + 1) . "'  style='font-size: 25px;padding-top: 3%;'  class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
             }
             else
                 echo "";
@@ -262,20 +282,17 @@ if(isset($_POST['search'])){
             }
 
             ?>
-
-
             <?php
             require "footer.php";
             ?>
 
-
-
         </div>
-    </div>
+
+
 
         <!--END OF HORIZONTAL CARDS-->
     </div>
-
+        </div>
 
 </body>
 

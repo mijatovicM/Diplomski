@@ -46,31 +46,33 @@ include_once("config/dbconfig.php");
 global $connection;
 $email =$_GET['email'];
 $token =$_GET['token'];
-      $sql = "SELECT * FROM users WHERE email='$email' AND registerToken='$token'";
+$sql = "SELECT * FROM users WHERE email='$email' AND registerToken='$token'";
+$sql = "SELECT * FROM users WHERE email=? AND registerToken=?";
+$result = $pdo->prepare($sql);
+$result->execute([$email, $token]);
 
-$result = mysqli_query($connection, $sql) or die(mysqli_error($connection));
-if (mysqli_num_rows($result) > 0) {
+if ($result->rowCount() > 0) {
 
         if (isset($_GET['email']) && !empty($_GET['email']) AND isset($_GET['token']) && !empty($_GET['token']) ) {
 
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            while ($row = $result->fetch()) {
+                $sql = "SELECT * FROM users WHERE email=? AND registerToken=? AND Status='inactive'";
+                $result = $pdo->prepare($sql);
+                $result->execute([$email, $token]);
 
-
-
-                $sql_select = "SELECT * FROM users WHERE email='" . $email . "' AND registerToken='" . $token . "' AND Status='inactive'";
-
-                $result = mysqli_query($connection, $sql_select);
-
-                if (mysqli_num_rows($result) > 0) {
-                    $match = mysqli_num_rows($result);
+                if ($result->rowCount() > 0) {
+                    $match = $result->rowCount();
 
                     if($match > 0) {
                         // We have a match, activate the account
 
-                        $sql_update = "UPDATE users SET Status='active' WHERE email='" . $email . "' AND Status='inactive'";
-                        $sql_update2 = "UPDATE `users` SET registerToken = '' WHERE email = '".$email."'";
-                        mysqli_query($connection, $sql_update);
-                        mysqli_query($connection, $sql_update2);
+                        $sql_update = "UPDATE users SET Status='active' WHERE email=? AND Status='inactive'";
+                        $sql_update2 = "UPDATE `users` SET registerToken = '' WHERE email = ?";
+                        $result = $pdo->prepare($sql_update);
+                        $result->execute([$email]);
+                        $result = $pdo->prepare($sql_update2);
+                        $result->execute([$email]);
+
 
 
                                 echo '<div class="hashtag" style="margin-top: 20%;">

@@ -62,13 +62,14 @@ include_once("config/dbconfig.php");
 
 //defining how many results we want per page
 $results_per_page=6;
-$sql = "SELECT   h.*, m.*, n.* FROM hashtags h INNER JOIN hashtags_middle_table m  ON h.hashtags_id = m.hashtags_id INNER JOIN news n ON m.id = n.id  WHERE h.hashtags='$hashtag' AND approved=1  ORDER BY n.id DESC";
+$sql = "SELECT   h.*, m.*, n.* FROM hashtags h INNER JOIN hashtags_middle_table m  ON h.hashtags_id = m.hashtags_id INNER JOIN news n ON m.id = n.id  WHERE h.hashtags=? AND approved=1  ORDER BY n.id DESC";
+    $result = $pdo->prepare($sql);
+    $result->execute([$hashtag]);
 /*
  SELECT news.id, news.title, news.caption, news.images, news.alt, news.newstype
 FROM news LEFT JOIN hashtags ON news.id=hashtags.id WHERE hashtags='$hashtag' ORDER BY id DESC
  */
-$result = mysqli_query($connection, $sql);
-$number_of_results=mysqli_num_rows($result);
+$number_of_results=$result->rowCount();
 
 //determine number of total pages available
 $number_of_pages=ceil($number_of_results/$results_per_page);
@@ -82,11 +83,12 @@ if(!isset($_GET['page'])){
 $this_page_first_result=($page-1)*$results_per_page;
 //retrieve selected results from database and display them on the page
 
-    $sql = "SELECT   h.*, m.*, n.* FROM hashtags h INNER JOIN hashtags_middle_table m  ON h.hashtags_id = m.hashtags_id INNER JOIN news n ON m.id = n.id WHERE h.hashtags='$hashtag' AND approved=1 ORDER BY n.id DESC LIMIT ".$this_page_first_result.','.$results_per_page;
-    $result = mysqli_query($connection, $sql);
-    $number_of_results=mysqli_num_rows($result);
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
+    $sql = "SELECT   h.*, m.*, n.* FROM hashtags h INNER JOIN hashtags_middle_table m  ON h.hashtags_id = m.hashtags_id INNER JOIN news n ON m.id = n.id WHERE h.hashtags=? AND approved=1 ORDER BY n.id DESC LIMIT ?, ?";
+    $result = $pdo->prepare($sql);
+    $result->execute([$hashtag, $this_page_first_result, $results_per_page]);
+    $number_of_results=$result->rowCount();
+    if ($result->rowCount() > 0) {
+        while ($row = $result->fetch()) {
             echo "<div class=\"horizontalCard card horizdiv\">";
             echo "<div class=\"row horizcontentdiv\">";
             echo "<div class=\"col-md-4 \">";
@@ -118,8 +120,8 @@ $this_page_first_result=($page-1)*$results_per_page;
     }
 
     $sql = "SELECT * FROM hashtags";
-    $result = mysqli_query($connection, $sql);
-    while ($row = mysqli_fetch_array($result)) {
+    $result = $pdo->query($sql);
+    while ($row = $result->fetch()) {
 
         $hashtags = $row['hashtags'];
 
@@ -144,8 +146,8 @@ for($i=1;$i<=$number_of_pages;$i++) {
         echo '<a class="active">' . $i . '</a>';
     } else {
         $sql = "SELECT * FROM hashtags";
-        $result = mysqli_query($connection, $sql);
-        while ($row = mysqli_fetch_array($result)) {
+        $result = $pdo->query($sql);
+        while ($row = $result->fetch()) {
 
             $hashtags = $row['hashtags'];
         }

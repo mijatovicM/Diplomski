@@ -1,0 +1,12 @@
+#Redirect /srbija.php /categories.php?category=srbija
+#Redirect /politika.php /categories.php?category=politika
+#Redirect /poznati.php /categories.php?category=poznati
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+#RewriteRule ^/(.*)\.php$ /category.php\?category=$1 [R=301, L]
+RewriteRule ^poznati\.php$ /categories.php?category=poznati [L]
+RewriteRule ^svet\.php$ /categories.php?category=svet [L]
+#RewriteRule ^/categories.php\?category=poznati$ /poznati.php [L]
+
+</IfModule>
