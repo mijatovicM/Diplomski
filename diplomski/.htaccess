@@ -4,9 +4,18 @@
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
-#RewriteRule ^/(.*)\.php$ /category.php\?category=$1 [R=301, L]
 RewriteRule ^poznati\.php$ /categories.php?category=poznati [L]
 RewriteRule ^svet\.php$ /categories.php?category=svet [L]
-#RewriteRule ^/categories.php\?category=poznati$ /poznati.php [L]
+RewriteRule ^zabava\.php$ /categories.php?category=zabava [L]
+RewriteRule ^srbija\.php$ /categories.php?category=srbija [L]
+RewriteRule ^sport\.php$ /categories.php?category=sport [L]
+RewriteRule ^politika\.php$ /categories.php?category=politika [L]
 
+</IfModule>
+
+#Header set Cache-Control "max-age=0, no-cache, must-revalidate"
+
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresDefault "access"
 </IfModule>
