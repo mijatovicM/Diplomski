@@ -24,6 +24,9 @@ include_once("admin/functions.php");
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
+    <?php
+    require_once 'csrf/csrf_javascript.php'
+    ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -70,10 +73,10 @@ include_once("admin/functions.php");
             //defining how many results we want per page
     global $pdo;
             $results_per_page=6;
-    if (isset($_SESSION['userId'])) {
+    require_once 'csrf/csrf.php';
+    if (isset($_SESSION['userId']) and checkCsrf(true)) {
         $nickname = $_SESSION['userUid'];
         echo '<div class="commentsection" style="position: relative; min-height: 100%;">';
-
         $sql = "SELECT * FROM comments WHERE nickname=? ORDER BY comments_id DESC";
         $result = $pdo->prepare($sql);
         !$result->execute([$nickname]) ? die($result->errorInfo()): false;

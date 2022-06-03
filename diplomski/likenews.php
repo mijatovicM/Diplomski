@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once 'csrf/csrf.php';
+startSession();
+require_once 'csrf/check_csrf.php';
 $userid=$_SESSION['userId'];
 $username= $_SESSION['userUid'];
 $news_id=$_GET['likenews_id'];
@@ -7,7 +9,7 @@ $news_id=$_GET['likenews_id'];
 include_once("config/dbconfig.php");
 global $connection;
 # dodati proveru da li postoji vise korisnika sa istim lajkom
-# script name u headeru ime fajla
+# script name u headeru ime fa
 $sql = "INSERT INTO liked_news(users_id,username,id) VALUES (?, ?, ?)";
 
 $result = $pdo->prepare($sql);
@@ -16,7 +18,7 @@ $result = $pdo->prepare($sql);
 
 if($result->rowCount() > 0) {
 
-    header("Location: news.php?id=$news_id");
+    header("Location: news.php?id=$news_id&csrfToken=".generateCsrfToken());
 }
 
 ?>

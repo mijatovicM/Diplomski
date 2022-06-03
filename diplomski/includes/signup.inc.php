@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once '../csrf/csrf.php';
+startSession();
+require_once '../csrf/check_csrf.php';
 if(isset($_POST['signup-submit'])){
 
     require '../config/dbconfig.php';
@@ -12,36 +14,32 @@ if(isset($_POST['signup-submit'])){
     $passwordRepeat=$_POST['pwd-repeat'];
     $captcha=$_POST['captcha'];
 
-    if (!checkCsrf()){
-        header('Location: ../signup.php?error=csrfError');
-        exit();
-    }
-    elseif(empty($username) || empty($email) || empty($password) || empty($passwordRepeat)|| empty($captcha)){
-        header("Location: ../signup.php?error=emptyfields&uid=".$username."&mail=".$email);
+    if(empty($username) || empty($email) || empty($password) || empty($passwordRepeat)|| empty($captcha)){
+        header("Location: ../signup.php?error=emptyfields&uid=".$username."&mail=".$email.'&csrfToken='.generateCsrfToken());
         exit();
     }
     elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) && !preg_match("/^[a-zA-Z0-9]*$/",$username)){
-        header("Location: ../signup.php?error=invalidmailuid");
+        header("Location: ../signup.php?error=invalidmailuid".'&csrfToken='.generateCsrfToken());
         exit();
     }
     elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        header("Location: ../signup.php?error=invalidmail&uid=".$username);
+        header("Location: ../signup.php?error=invalidmail&uid=".$username.'&csrfToken='.generateCsrfToken());
         exit();
     }
     elseif(!preg_match("/^[a-zA-Z0-9]*$/",$username)){
-        header("Location: ../signup.php?error=invaliduid&mail=".$email);
+        header("Location: ../signup.php?error=invaliduid&mail=".$email.'&csrfToken='.generateCsrfToken());
         exit();
     }
     elseif ($password !== $passwordRepeat){
-        header("Location: ../signup.php?error=passwordcheck&uid=".$username."&mail=".$email);
+        header("Location: ../signup.php?error=passwordcheck&uid=".$username."&mail=".$email.'&csrfToken='.generateCsrfToken());
         exit();
     }
     elseif (strlen($password) <6){
-        header("Location: ../signup.php?error=passwordlength&uid=".$username."&mail=".$email);
+        header("Location: ../signup.php?error=passwordlength&uid=".$username."&mail=".$email.'&csrfToken='.generateCsrfToken());
         exit();
     }
     else if ($_POST['captcha'] != $_SESSION['digit']) {
-        header("Location: ../signup.php?error=captcha");
+        header("Location: ../signup.php?error=captcha".'&csrfToken='.generateCsrfToken());
 
 
         session_destroy();
@@ -54,7 +52,7 @@ if(isset($_POST['signup-submit'])){
         $result->execute([$username]);
         $resultCheck=$result->rowCount();
         if($resultCheck>0){
-            header("Location: ../signup.php?error=usertaken&mail=".$email);
+            header("Location: ../signup.php?error=usertaken&mail=".$email.'&csrfToken='.generateCsrfToken());
             exit();
         }
         else{
@@ -81,7 +79,7 @@ if(isset($_POST['signup-submit'])){
 
 
 
-              header("Location: ../signup.php?signup=success");
+              header("Location: ../signup.php?signup=success".'&csrfToken='.generateCsrfToken());
                 {
                     $current_path = 'localhost/diplomski/';
                     $to      = $_POST["mail"];
@@ -109,6 +107,6 @@ if(isset($_POST['signup-submit'])){
     }
 }
 else{
-    header("Location: ../signup.php?");
+    header("Location: ../signup.php?".'&csrfToken='.generateCsrfToken());
 }
 ?>

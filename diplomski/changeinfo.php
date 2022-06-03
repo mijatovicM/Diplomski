@@ -1,6 +1,7 @@
 <?php
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
+require_once 'csrf/check_csrf.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,6 +25,9 @@ include_once("admin/functions.php");
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
+    <?php
+    require_once 'csrf/csrf_javascript.php'
+    ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -137,7 +141,7 @@ function usernameupdate($pdo)
         $result->execute([$editorUsername]);
         if ($result->rowCount() > 0) {
             while ($row = $result->fetch()) {
-                exit ('<script> location.replace("changeinfo.php?error=usernameexist");</script>');
+                exit ('<script> location.replace("changeinfo.php?error=usernameexist&csrfToken=".generateCsrfToken());</script>');
 
             }
         }
@@ -145,10 +149,10 @@ function usernameupdate($pdo)
         $sql = "UPDATE users SET username=? WHERE users_id=?";
         $result = $pdo->prepare($sql);
         if ($result->execute([$editorUsername, $id])) {
-            echo '<script> location.replace("index.php?success=changed");</script>';
+            echo '<script> location.replace("index.php?success=changed&csrfToken=".generateCsrfToken());</script>';
             session_destroy();
         } else {
-            echo '<script>location.replace("index.php?success=errrorchange");</script>';
+            echo '<script>location.replace("index.php?success=errrorchange&csrfToken=".generateCsrfToken());</script>';
         }
     } else {
         //Not performing any action
@@ -217,65 +221,21 @@ function usernameupdate($pdo)
                                 $sql = "UPDATE users SET password=? WHERE username=?";
                                 $result = $pdo->prepare($sql);
                                 !$result->execute([$newPwd, $username]) ? die($result->errorInfo()) : true;
-                                echo '<script>location.replace("changeinfo.php?success=passwordchanged");</script>';
+                                echo '<script>location.replace("changeinfo.php?success=passwordchanged&csrfToken="'.generateCsrfToken().');</script>';
                             }
                             else {
-                                echo '<script>location.replace("changeinfo.php?error=passwordnotmatching");</script>';
+                                echo '<script>location.replace("changeinfo.php?error=passwordnotmatching&csrfToken=".generateCsrfToken().")";</script>';
                             }
                         } else {
-                            echo '<script>location.replace("changeinfo.php?error=passwordlength");</script>';
+                            echo '<script>location.replace("changeinfo.php?error=passwordlength&csrfToken=".generateCsrfToken());</script>';
                         }
                     }
                      else {
-                        echo '<script>location.replace("changeinfo.php?error=passwordcurrent");</script>';
+                        echo '<script>location.replace("changeinfo.php?error=passwordcurrent&csrfToken=".generateCsrfToken());</script>';
                     }
                 }
             }
         }
-    }
-    ?>
-    <form action="" method="post" style="margin-top: 7%;margin-bottom: 3%;">
-        <table class='userchangetable'>
-            <tr>
-                <th style="text-align: center !important;">Newsletter</th>
-                <td style="text-align: center !important;">
-                    <?php
-                    $sql = "SELECT * FROM users WHERE users_id=?";
-                    $result = $pdo->prepare($sql);
-                    $result->execute([$userid]);
-                    if ($result->rowCount() > 0) {
-                        while ($row = $result->fetch()) {
-                            $newsletter=$row['newsletter'];
-                            if($newsletter=='no') {
-                                echo ' <button type="submit" class="btn btn-info" name="newsletteryes">Prijavi se</button>';
-                            }
-                            elseif($newsletter=='yes'){
-                                echo ' <button type="submit" class="btn btn-danger" name="newsletterno">Odjavi se</button>';
-
-                            }
-                        }
-                    }
-
-                    ?>
-                </td>
-            </tr>
-        </table>
-    </form>
-    <?php
-    if(isset($_POST['newsletteryes'])) {
-        $newsletteryes = $_POST['newsletteryes'];
-        $sql = "UPDATE users SET newsletter='yes' WHERE users_id=?";
-        $result = $pdo->prepare($sql);
-        $result->execute([$userid]);
-        $result ? false : die($result->errorInfo());
-        echo "<script>location.replace('changeinfo.php?success=newsletteryes');</script>";
-    }
-    elseif(isset($_POST['newsletterno'])) {
-        $newsletterno = $_POST['newsletterno'];
-        $sql = "UPDATE users SET newsletter='no' WHERE users_id=?";
-        $result = $pdo->prepare($sql);
-        !$result->execute([$userid]) ? die($result->errorInfo()): false;
-        echo "<script>location.replace('changeinfo.php?success=newsletterno');</script>";
     }
     ?>
 

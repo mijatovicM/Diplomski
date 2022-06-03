@@ -1,4 +1,6 @@
 <?php
+require_once '../csrf/check_csrf.php';
+require_once '../csrf/csrf.php';
 if(isset($_POST['login-submit'])) {
     require '../config/dbconfig.php';
 
@@ -23,19 +25,14 @@ if(isset($_POST['login-submit'])) {
                 header("Location: ../index.php?error=inactive");
                 exit();
             } elseif ($pwdCheck == true) {
-                session_start();
+                startSession();
                 $_SESSION['userId'] = $row['users_id'];
                 $_SESSION['userUid'] = $row['username'];
                 $_SESSION['userType'] = $row['type'];
 
 
-                if ($_SESSION['userType'] == 'redakcija') {
-                    header("Location: ../admin/index.php?login=success");
-                    exit();
-                } else {
-                    header("Location: ../index.php?login=success");
-                    exit();
-                }
+                header("Location: ../index.php?login=success");
+                exit();
 
             } else {
                 header("Location: ../index.php?error=wrongpassword");

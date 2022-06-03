@@ -16,7 +16,8 @@ for($i=0; $i < 6; $i++) {
     imageline($image, 0, rand(0,30), 120, rand(0,30), $linecolor);
 }
 
-session_start();
+require_once 'csrf/csrf.php';
+startSession();
 
 // add random digits to canvas
 $digit = '';

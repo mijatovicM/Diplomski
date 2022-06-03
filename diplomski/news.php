@@ -1,42 +1,40 @@
 <?php
-session_start();
+
 
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
+require_once 'csrf/csrf.php';
+require_once './post_news.php';
+startSession();
 global $connection;
 $id = $_GET['id'];
     include_once("config/dbconfig.php");
     global $connection;
-    $sql = "SELECT * FROM news WHERE id=$id ";
+    $sql = "SELECT * FROM news WHERE id=? ";
     $result = $pdo->prepare($sql);
     $result->execute([$id]);
 
     if ($result->rowCount() > 0) {
         while($row = $result->fetch()) {
             if(!isset($_COOKIE['count'.$id])){
-                $content=$row["cookie_count"];
-                $val=$content+1;
-                $sql = "UPDATE news SET cookie_count=? WHERE id=?";
-                $result = $pdo->prepare($sql);
-                $result->execute([$val, $id]);
-                setcookie("count".$id,$val,time()+600);
+                cookieCount($row, $id);
             }
-
-        }}
+        }
+    }
 
 
 
 if(isset($_POST['notloggedin'])) {
 if(!isset($_SESSION['userId'])) {
-    header("Location: news.php?like=notlogged&id=" . $id . "");
+    header("Location: news.php?like=notlogged&id=" . $id . '&csrfToken='.generateCsrfToken());
 }
 }
 if(isset($_POST['komentarisi']) && !isset($_SESSION['userId'])){
-    header("Location: news.php?comment=notlogged&id=" . $id . "");
+    header("Location: news.php?comment=notlogged&id=" . $id . '&csrfToken='.generateCsrfToken());
 }
 if(isset($_POST['komentarisi']) ) {
     if (isset($_SESSION['userId'])) {
-        header("Location: news.php?comment=success&id=" . $id . "");
+        header("Location: news.php?comment=success&id=" . $id . '&csrfToken='.generateCsrfToken());
     }
 }
 
@@ -63,6 +61,10 @@ if(isset($_POST['komentarisi']) ) {
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
+
+    <?php
+    require_once 'csrf/csrf_javascript.php'
+    ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -236,7 +238,8 @@ if(isset($_POST['komentarisi']) ) {
                     function likenews(likenewsid)
                     {
                         if(confirm("Da li želite da lajkujete ovu vest?")){
-                            window.location.href='likenews.php?likenews_id=' +likenewsid+'';
+                            window.location.href='likenews.php?likenews_id=' +likenewsid+'&csrfToken='+'<?=generateCsrfToken()?>'
+
                             alert('Lajkovali ste ovu vest');
                             return true;
                         }
@@ -252,7 +255,7 @@ if(isset($_POST['komentarisi']) ) {
                     function deletenewsme(delnewsid)
                     {
                         if(confirm("Da li sigurno želite da obrišete ovu vest?")){
-                            window.location.href='deletenews.php?delnews_id=' +delnewsid+'';
+                            window.location.href='deletenews.php?delnews_id=' +delnewsid+'&csrfToken='+'<?=generateCsrfToken()?>';
                             alert('Uspešno ste izbrisali vest');
                             return true;
                         }
@@ -315,28 +318,8 @@ if(isset($_POST['komentarisi']) ) {
         <?php
 
         if($_POST) {
-            $id = $_GET['id'];
-
-            if (isset($_SESSION['userId'])){
-                $nickname= $_SESSION['userUid'];
-
-            $find = array('idiot', 'kreten', 'moron','retard','imbecil');
-            $replace =array('<b>*cenzurisano*</b>', '<b>*cenzurisano*</b>', '<b>*cenzurisano*</b>','<b>*cenzurisano*</b>','<b>*cenzurisano*</b>');
-
-            if (isset($_POST['user_input']) && !empty($_POST['user_input'])) {
-                $user_input = $_POST['user_input'];
-                $user_input_new = str_ireplace($find, $replace, $user_input);
-
-            $sql = "INSERT INTO comments (nickname,comments,approved,id,timeofcomment) VALUES (?,?,0,?,NOW())";
-            $result = $pdo->prepare($sql);
-            $result->execute([$nickname, $user_input_new, $id]);
-
-            }
+            postNews();
         }
-        }
-
-
-
         ?>
 
 
@@ -380,7 +363,7 @@ if(isset($_POST['komentarisi']) ) {
         }
 
         echo '<div style="text-align: center;"/>';
-        echo '<a class="allcommentslink" href="comments.php?id='.$id.'">Pročitajte sve komentare</a><br/>';
+        echo '<a class="allcommentslink" href="comments.php?id='.$id.getCsrf();'">Pročitajte sve komentare</a><br/>';
         echo '</div>';
 
      ?>

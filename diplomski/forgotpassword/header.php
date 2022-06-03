@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once '../csrf/csrf.php';
+startSession();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +11,10 @@ session_start();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content=izvestavaj.me>
+    <script src="../src/bootstrap/js/jquery-3.3.1.min.js"></script>
+    <?php
+    require_once '../csrf/csrf_javascript.php'
+    ?>
 </head>
 <body>
 <!--NAVBAR-->

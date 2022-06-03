@@ -5,7 +5,8 @@ include_once("config/dbconfig.php");
 
 //autocomplete part
 global $connection;
-if(isset($_POST['search'])){
+require_once 'csrf/csrf.php';
+if(isset($_POST['search']) and checkCsrf(true)){
     $response= "<h6 class='searchBox'>Nema rezultata</h4 class='searchBox'>";
 
     $q=$connection->real_escape_string($_POST['q']);
@@ -45,7 +46,9 @@ if(isset($_POST['search'])){
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="src/bootstrap/js/jquery-3.3.1.min.js"></script>
-
+    <?php
+    require_once 'csrf/csrf_javascript.php'
+    ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
@@ -125,28 +128,6 @@ if(isset($_POST['search'])){
 
         <!-- END OF WEATHER WIDGET -->
 
-        <!-- NEWSLETTER AND USER NEWS DIV -->
-        <div class="wrapper clearfix newsletter_user_div">
-
-            <div style="float: left;width: 50%;border-right: 1px solid #b7b7b7;">
-                    <form method="post" action="">
-                        <button type="submit" name="newsletterbutton" class="newsletter_button_div">Prijavi se na newsletter</button>
-                    </form>
-                </div>
-
-        </div>
-        <?php
-        if($_POST) {
-            if (!isset($_SESSION['userId'])) {
-                echo ('<script>location.replace("index.php?error=notlogged");</script>');
-
-            } elseif (isset($_SESSION['userId'])) {
-                echo "<script>location.replace('changeinfo.php');</script>";
-            }
-        }
-        ?>
-
-        <!--END OF NEWSLETTER AND USER NEWS DIV -->
 
         <!-- SEARCH BOX -->
         <form action="search.php" method="get">
@@ -521,3 +502,6 @@ if(isset($_POST['search'])){
     </body>
 
 </html>
+<?php
+require_once 'csrf/csrf_javascript.php'
+?>
