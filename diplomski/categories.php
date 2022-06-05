@@ -3,11 +3,11 @@ include_once("config/dbconfig.php");
 
 $categories = [
     'sport',
-    'srbija',
     'politika',
     'poznati',
     'svet',
-    'zabava'
+    'zabava',
+    'srbija'
 ];
 
 if (isset($_GET['category']) and in_array($_GET['category'], $categories)){
@@ -121,7 +121,7 @@ if(isset($_POST['search'])){
 
                 if(query.length>0){
                     $.ajax({
-                            url:'srbija.php',
+                            url:'<?=$category?>.php',
                             method:'POST',
                             data:{
                                 search:1,
@@ -189,8 +189,9 @@ if(isset($_POST['search'])){
 
             //defining how many results we want per page
             $results_per_page=6;
-            $sql = "SELECT * FROM news WHERE newstype='srbija'  AND approved=1  ORDER BY id DESC";
-            $result = $pdo->query($sql);
+            $sql = "SELECT * FROM news WHERE newstype=?  AND approved=1  ORDER BY id DESC";
+            $result = $pdo->prepare($sql);
+            $result->execute([$category]);
             $number_of_results=$result->rowCount();
 
             //determine number of total pages available
@@ -204,10 +205,10 @@ if(isset($_POST['search'])){
             //determine the sql LIMIT starting number for the results on the displaying page
             $this_page_first_result=($page-1)*$results_per_page+4;
             //retrieve selected results from database and display them on the page
-            $sql = "SELECT * FROM news  WHERE newstype='srbija'  AND approved=1  ORDER BY id DESC LIMIT " .$this_page_first_result.','.$results_per_page;
-            $sql = "SELECT * FROM news  WHERE newstype='srbija'  AND approved=1  ORDER BY id DESC LIMIT ?, ?";
+            $sql = "SELECT * FROM news  WHERE newstype=?  AND approved=1  ORDER BY id DESC LIMIT " .$this_page_first_result.','.$results_per_page;
+            $sql = "SELECT * FROM news  WHERE newstype=?  AND approved=1  ORDER BY id DESC LIMIT ?, ?";
             $result = $pdo->prepare($sql);
-            $result->execute([$this_page_first_result, $results_per_page]);
+            $result->execute([$category, $this_page_first_result, $results_per_page]);
             $number_of_results=$result->rowCount();
             if ($result->rowCount() > 0) {
                 while ($row = $result->fetch()) {
@@ -246,7 +247,7 @@ if(isset($_POST['search'])){
             echo "<ul class='justify-content-center pagination'>";
             if(isset($_GET['page'])) {
                 if ($_GET['page'] > 1) {
-                    echo "<li><a href='srbija.php?page=" . ($page - 1) . "'style='font-size: 25px;padding-top: 3%;'  class='button'><i class=\"fas fa-chevron-circle-left\"></i></a></li>";
+                    echo "<li><a href='$category.php?page=" . ($page - 1) . "'style='font-size: 25px;padding-top: 3%;'  class='button'><i class=\"fas fa-chevron-circle-left\"></i></a></li>";
                 }}
             else echo "";
             if(!isset($_GET['page'])){
@@ -260,18 +261,18 @@ if(isset($_POST['search'])){
                     if($i==$page)
                         echo '<a class="active">'.$i.'</a>';
                     else
-                        echo '<a href="srbija.php?page='.$i.'">'.$i.'</a>';
+                        echo '<a href="'.$category.'.php?page='.$i.'">'.$i.'</a>';
                 }
             }
             if($page>2 ) {
-                echo '<a class="active" href="srbija.php?page=' . $page . '">' . $page . '</a>';
+                echo '<a class="active" href="'.$category.'.php?page=' . $page . '">' . $page . '</a>';
             }
             if(isset($_GET['page'])) {
                 if ($_GET['page'] < $number_of_pages) {
-                    echo "<li><a href='srbija.php?page=" . ($page + 1) . "' style='font-size: 25px;padding-top: 3%;' class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
+                    echo "<li><a href='$category.php?page=" . ($page + 1) . "' style='font-size: 25px;padding-top: 3%;' class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
                 }}
             elseif (!isset($_GET['page'])){
-                echo "<li><a href='srbija.php?page=" . ($page + 1) . "'  style='font-size: 25px;padding-top: 3%;'  class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
+                echo "<li><a href='$category.php?page=" . ($page + 1) . "'  style='font-size: 25px;padding-top: 3%;'  class='button'><i   class=\"fas fa-chevron-circle-right\"></i></a></li>";
             }
             else
                 echo "";

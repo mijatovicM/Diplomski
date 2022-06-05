@@ -84,8 +84,8 @@ require_once 'csrf/check_csrf.php';
 
 
 
-                        $userid=$_SESSION['userId'];
-                        $username= $_SESSION['userUid'];
+                        $userid=$_SESSION['userId'] ?? '';
+                        $username= $_SESSION['userUid'] ?? '';
                         echo "<form action='' method='post' style='margin-top: 7%;margin-bottom: 3%;'>";
 
                                 echo "<table class='userchangetable'>";
@@ -133,7 +133,6 @@ function usernameupdate($pdo)
     if (isset($_POST['username'])) {
         $editorUsername = $_POST['username'];
 
-        $id = $_POST['id'];
         include "config/dbconfig.php";
 
         $sql = "SELECT * FROM users WHERE username=?";
@@ -141,18 +140,19 @@ function usernameupdate($pdo)
         $result->execute([$editorUsername]);
         if ($result->rowCount() > 0) {
             while ($row = $result->fetch()) {
-                exit ('<script> location.replace("changeinfo.php?error=usernameexist&csrfToken=".generateCsrfToken());</script>');
+                exit ('<script> location.replace("changeinfo.php?error=usernameexist&csrfToken='.generateCsrfToken().'");</script>');
 
             }
         }
 
+        $userid = $_SESSION['userId'] ?? '';
         $sql = "UPDATE users SET username=? WHERE users_id=?";
         $result = $pdo->prepare($sql);
-        if ($result->execute([$editorUsername, $id])) {
-            echo '<script> location.replace("index.php?success=changed&csrfToken=".generateCsrfToken());</script>';
+        if ($result->execute([$editorUsername, $userid])) {
+            echo '<script> location.replace("index.php?success=changed");</script>';
             session_destroy();
         } else {
-            echo '<script>location.replace("index.php?success=errrorchange&csrfToken=".generateCsrfToken());</script>';
+            echo '<script>location.replace("index.php?success=errrorchange);</script>';
         }
     } else {
         //Not performing any action
@@ -221,17 +221,17 @@ function usernameupdate($pdo)
                                 $sql = "UPDATE users SET password=? WHERE username=?";
                                 $result = $pdo->prepare($sql);
                                 !$result->execute([$newPwd, $username]) ? die($result->errorInfo()) : true;
-                                echo '<script>location.replace("changeinfo.php?success=passwordchanged&csrfToken="'.generateCsrfToken().');</script>';
+                                echo '<script>location.replace("changeinfo.php?success=passwordchanged&csrfToken='.generateCsrfToken().'");</script>';
                             }
                             else {
-                                echo '<script>location.replace("changeinfo.php?error=passwordnotmatching&csrfToken=".generateCsrfToken().")";</script>';
+                                echo '<script>location.replace("changeinfo.php?error=passwordnotmatching&csrfToken='.generateCsrfToken().'");</script>';
                             }
                         } else {
-                            echo '<script>location.replace("changeinfo.php?error=passwordlength&csrfToken=".generateCsrfToken());</script>';
+                            echo '<script>location.replace("changeinfo.php?error=passwordlength&csrfToken='.generateCsrfToken().'");</script>';
                         }
                     }
                      else {
-                        echo '<script>location.replace("changeinfo.php?error=passwordcurrent&csrfToken=".generateCsrfToken());</script>';
+                        echo '<script>location.replace("changeinfo.php?error=passwordcurrent&csrfToken='.generateCsrfToken().'");</script>';
                     }
                 }
             }

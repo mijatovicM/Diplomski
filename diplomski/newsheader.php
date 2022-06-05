@@ -60,8 +60,6 @@
                     if(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'redakcija'){
 
 
-                        echo '<div class="loggedInMessageDiv" style="width:250px;text-align: center;"><p class="loggedInMessage">Redakcija: '.$_SESSION['userUid']. '</p></div><hr style="border-color:#808080 "/>';
-
                         echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="admin/index.php">Redakcija</a></div>
                     <hr style="border-color:#808080 "/>';
 

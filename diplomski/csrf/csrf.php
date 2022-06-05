@@ -28,7 +28,7 @@ function checkCsrf($silent=false){
     startSession();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-        $token = filter_input(INPUT_POST, 'csrfToken', FILTER_SANITIZE_STRING);
+        $token = $_POST['csrfToken'] ?? '';
     } else {
         $token = $_GET['csrfToken'] ?? '';
     }

@@ -6,7 +6,7 @@ include_once("config/dbconfig.php");
 //autocomplete part
 global $connection;
 require_once 'csrf/csrf.php';
-if(isset($_POST['search']) and checkCsrf(true)){
+if(isset($_POST['search'])){
     $response= "<h6 class='searchBox'>Nema rezultata</h4 class='searchBox'>";
 
     $q=$connection->real_escape_string($_POST['q']);

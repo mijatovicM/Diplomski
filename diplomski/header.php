@@ -66,9 +66,6 @@ startSession();
                         <?php
                     if(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'redakcija'){
 
-
-                        echo '<div class="loggedInMessageDiv" style="width:250px;text-align: center;"><p class="loggedInMessage">Redakcija: '.$_SESSION['userUid']. '</p></div><hr style="border-color:#808080 "/>';
-
                         echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="admin/index.php">Redakcija</a></div>
                     <hr style="border-color:#808080 "/>';
 
@@ -119,12 +116,14 @@ startSession();
                     if(isset($_SESSION['userId'])){
                         echo ' <form action="includes/logout.inc.php" method="post">
  <div class="logoutdiv">
-            <button type="submit" name="logout-submit" class="btn btn-danger" style="margin-bottom:10% ">Odjavi se</button></div></form>';
+ 
+            <button type="submit" name="logout-submit" class="btn btn-danger" style="margin-bottom:10% ">Odjavi se</button></div>'.simplePostCsrf().'</form>';
                     }
                     else{
                         echo '<form action="includes/login.inc.php" method="post" style="text-align: center">
                <br/>
             <input type="text" class="loginInput" name="mailuid" placeholder="Korisničko ime...">
+            '.simplePostCsrf().'
             <br/> <br/>
 
             <input type="password" class="loginInput" name="pwd" placeholder="Lozinka...">

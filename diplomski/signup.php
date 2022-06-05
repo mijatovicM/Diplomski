@@ -83,10 +83,6 @@
         </h1>
         </div>
         <form class="form-signup" action="includes/signup.inc.php" onsubmit="return checkForm(this)" method="post">
-            <?php
-                require_once 'utils/csrf.php';
-                createCsrf();
-            ?>
             <div class="input-group">
                 <span class="input-group-addon" style="margin-left: 20%;"><i class="fas fa-user icons"></i></span>
               <input type="text" class="form-control"  name="uid" placeholder="Korisničko ime"/>

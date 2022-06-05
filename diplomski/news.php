@@ -4,7 +4,6 @@
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
 require_once 'csrf/csrf.php';
-require_once './post_news.php';
 startSession();
 global $connection;
 $id = $_GET['id'];
@@ -17,7 +16,12 @@ $id = $_GET['id'];
     if ($result->rowCount() > 0) {
         while($row = $result->fetch()) {
             if(!isset($_COOKIE['count'.$id])){
-                cookieCount($row, $id);
+                $content = $row["cookie_count"];
+                $val = $content + 1;
+                $sql = "UPDATE news SET cookie_count=? WHERE id=?";
+                $result = $pdo->prepare($sql);
+                $result->execute([$val, $id]);
+                setcookie("count" . $id, $val, time() + 600);
             }
         }
     }
@@ -68,7 +72,6 @@ if(isset($_POST['komentarisi']) ) {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="ckeditor/ckeditor.js"></script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.js"></script>
@@ -98,16 +101,22 @@ if(isset($_POST['komentarisi']) ) {
             echo '<div class="errordiv">Morate biti prijavljeni da biste lajkovali vest!</div>';
         }
     }
-
     if(isset($_GET['comment'])) {
         if ($_GET['comment'] == "notlogged") {
             echo '<div class="errordiv">Morate biti prijavljeni da biste poslali komentar!</div>';
         }
+        if ($_GET['comment'] == 'html_detected') {
+            echo '<div class="errordiv">Komentar ne sme sadržati html!</div>';
+        }
+        if ($_GET['comment'] == 'prfanity_detected') {
+            echo '<div class="errordiv">Komentar ne sme sadržati ružne reči!</div>';
+        }
     }
+
 
     if(isset($_GET['comment'])) {
         if ($_GET['comment'] == "success") {
-            $messagecomment = "Uspešno ste poslali komentar. Sačekajte da administratori odobre vaš komentar.";
+            $messagecomment = "Uspešno ste poslali komentar.";
             echo "<div class='successdiv'>$messagecomment</div>";
         }
     }
@@ -207,9 +216,6 @@ if(isset($_POST['komentarisi']) ) {
                 echo "<button class='btn btn-danger' onClick='deletenewsme($id)' name='Delete'>Izbrišite <i class=\"fas fa-trash-alt\"></i></button> &nbsp;";
                 deletenews();
 
-                echo "<a href='admin/updatenews.php?id=$id' class='btn btn-secondary'>Izmenite vest <i class=\"fas fa-edit\"></i></a> &nbsp;";
-                echo "<a href='admin/updateimage.php?id=$id' class='btn btn-primary'>Izmenite sliku <i class=\"far fa-images\"></i></a> &nbsp;";
-
                 echo "</div>";
                 $sql = "SELECT * FROM news WHERE id=?";
                 $result = $pdo->prepare($sql);
@@ -302,11 +308,15 @@ if(isset($_POST['komentarisi']) ) {
     <div class="commentsection" >
         <h3>Postavite komentar</h3>
 
-        <form action="" method="post">
-
+        <form action="post_comment.php" method="post">
+            <?php
+            $news_id = $_GET['id'] ?? '';
+            ?>
             <div style="width: 40%;   margin: 0 auto;">
                 <textarea name="user_input" id="user_input"  cols="30" rows="3" placeholder="Upišite komentar..." required maxlength="500" class="commentsinput" ></textarea>
             </div>
+            <?=simplePostCsrf()?>
+            <input type="hidden" name="news_id" value="<?=$news_id?>">
             <br/>
             <p>Max. 500 karaktera</p>
             <input type="submit"  name="komentarisi" value="Postavite komentar" class="responsive-width btn btn-primary">
@@ -314,17 +324,6 @@ if(isset($_POST['komentarisi']) ) {
 
 
         <hr style="border-bottom: 1px solid #c2d0cd;width: 70%;"/>
-
-        <?php
-
-        if($_POST) {
-            postNews();
-        }
-        ?>
-
-
-
-
         <?php
 
         $id = $_GET['id'];
@@ -363,7 +362,7 @@ if(isset($_POST['komentarisi']) ) {
         }
 
         echo '<div style="text-align: center;"/>';
-        echo '<a class="allcommentslink" href="comments.php?id='.$id.getCsrf();'">Pročitajte sve komentare</a><br/>';
+        echo '<a class="allcommentslink" href="comments.php?id='.$id.getCsrf().'">Pročitajte sve komentare</a><br/>';
         echo '</div>';
 
      ?>
@@ -382,4 +381,5 @@ if(isset($_POST['komentarisi']) ) {
         pickerPosition:"bottom"
     });
 </script>
+<script src="src/images.js"></script>
 </html>

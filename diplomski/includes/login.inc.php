@@ -1,12 +1,10 @@
 <?php
 require_once '../csrf/check_csrf.php';
-require_once '../csrf/csrf.php';
 if(isset($_POST['login-submit'])) {
     require '../config/dbconfig.php';
 
     $mailuid = $_POST['mailuid'];
     $password = $_POST['pwd'];
-
     if (empty($mailuid) || empty($password)) {
         header("Location: ../index.php?error=emptyfields");
         exit();
@@ -44,7 +42,6 @@ if(isset($_POST['login-submit'])) {
         }
     }
 }
-
 else{
     header("Location: ../index.php?");
 exit();

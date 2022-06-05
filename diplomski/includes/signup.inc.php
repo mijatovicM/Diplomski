@@ -5,7 +5,6 @@ require_once '../csrf/check_csrf.php';
 if(isset($_POST['signup-submit'])){
 
     require '../config/dbconfig.php';
-    require_once '../utils/csrf.php';
 
 
     $username=$_POST['uid'];
