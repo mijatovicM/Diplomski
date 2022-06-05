@@ -64,7 +64,7 @@ if(isset($_POST['signup-submit'])){
             $str = "03565emikmtroimfalsmhgzuxiucqnwdoweo324o0-tkerkm235_214rffhgkl";
             $str = str_shuffle($str);
             $str = substr($str, 0,32);
-            $current_path = 'localhost/diplomski/';
+            $current_path = 'news/';
 
             $sql = "UPDATE `users` SET registerToken =? WHERE email = ?";
             $result = $pdo->prepare($sql);
@@ -80,7 +80,7 @@ if(isset($_POST['signup-submit'])){
 
               header("Location: ../signup.php?signup=success".'&csrfToken='.generateCsrfToken());
                 {
-                    $current_path = 'localhost/diplomski/';
+                    $current_path = 'news/';
                     $to      = $_POST["mail"];
                     $subject = 'Registracija | Verifikacija';
                     $message = '

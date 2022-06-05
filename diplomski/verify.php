@@ -1,5 +1,4 @@
 <?php
-require_once 'csrf/check_csrf.php';
 include_once("config/dbconfig.php");
 ?>
 <!DOCTYPE html>
