@@ -1,6 +1,6 @@
 
 <?php
-
+header("Content-Security-Policy: script-src 'self' https://code.jquery.com/ https://stackpath.bootstrapcdn.com/; img-src 'self'; style-src 'self' ");
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
 ?>

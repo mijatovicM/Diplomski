@@ -10,7 +10,7 @@ include_once("config/dbconfig.php");
 global $connection;
 # dodati proveru da li postoji vise korisnika sa istim lajkom
 # script name u headeru ime fa
-$sql = "INSERT INTO liked_news(users_id,username,id) VALUES (?, ?, ?)";
+$sql = "INSERT IGNORE INTO liked_news (users_id,username,id) VALUES (?,?,?)";
 
 $result = $pdo->prepare($sql);
 !$result->execute([$userid, $username, $news_id]) ? die($result->errorInfo()) : false;

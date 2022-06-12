@@ -1,5 +1,6 @@
 <?php
 
+header("Content-Security-Policy: default-src 'self' https://code.jquery.com/ https://stackpath.bootstrapcdn.com/ https://use.fontawesome.com/releases/v5.3.1/css/all.css https://www.kurir.rs; ");
 
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
