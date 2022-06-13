@@ -962,3 +962,50 @@
         font-family: 'Teko', sans-serif;
 
     }
+
+    @media screen and (min-width: 200px) {
+        .commentsection {
+            padding-bottom: 10%;
+            position: relative;
+            min-height: 100%;
+            margin-bottom: 25%;
+        }
+
+    }
+    @media screen and (min-width: 400px) {
+        .commentsection {
+            position: relative;
+            min-height: 100%;
+            margin-bottom: 10%;
+        }
+    }
+
+    .bannerstyle {position: fixed; z-index: 1;}
+    .bannerinnerstyle{
+        background-color: white;margin-right: 11%; margin-left: 11%;position: relative; z-index: 2;
+    }
+    .clearfix#firstwrapper{
+        margin-right: 0%;margin-left: 0%; position: relative; z-index: 3; min-height: 100vh;overflow: hidden;
+        display: block;}
+    .commentsection{
+        position: relative; min-height: 100%;
+    }
+
+    .commentedh1 {
+        margin-top: 5%;}
+    .commentspan{
+        background-color: #f8f8f8;box-shadow: 1px 1px 2px 2px #ceddda;border-radius: 7px 7px;margin-bottom: 5%;
+    }
+    .commenteddiv1{
+        margin-top: 1%;margin-bottom: 3%;
+    }
+    .commentedhr1{
+        margin-bottom: 2%;width: 70%;
+    }
+    .commenteddiv2{
+        height: 200px;}
+
+    .commentedh2{
+        width: 80%;border-radius: 7px 7px;margin: 10% auto 0 auto;font-size:40px;
+    }
+
