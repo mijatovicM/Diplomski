@@ -1,6 +1,7 @@
 
 <?php
-header("Content-Security-Policy: script-src 'self' https://code.jquery.com/ https://stackpath.bootstrapcdn.com/; img-src 'self'; style-src 'self' ");
+$nonce = bin2hex(random_bytes('32'));
+header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net cdn.rawgit.com https://code.jquery.com/ https://stackpath.bootstrapcdn.com/ https://use.fontawesome.com/releases/v5.3.1/css/all.css https://www.kurir.rs use.fontawesome.com cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com https://ads.kurir-info.rs; script-src 'nonce-$nonce' 'self' https://cdn.jsdelivr.net cdn.rawgit.com https://code.jquery.com/ https://stackpath.bootstrapcdn.com/ https://use.fontawesome.com/releases/v5.3.1/css/all.css https://www.kurir.rs use.fontawesome.com cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com https://ads.kurir-info.rs; style-src 'self' https://fonts.googleapis.com/ https://cdnjs.cloudflare.com https://use.fontawesome.com/ cdn.jsdelivr.net; ");
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
 ?>
@@ -36,44 +37,22 @@ include_once("admin/functions.php");
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.js"></script>
-
-    <style>
-        @media screen and (min-width: 200px) {
-            .commentsection {
-                padding-bottom: 10%;
-                position: relative;
-                min-height: 100%;
-                margin-bottom: 25%;
-            }
-
-        }
-        @media screen and (min-width: 400px) {
-            .commentsection {
-                position: relative;
-                min-height: 100%;
-                margin-bottom: 10%;
-            }
-        }
-    </style>
+    <link href="src/css/comments.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
 
 <div>
-    <div style="position: fixed; z-index: 1;" >
+    <div class="comments0" >
         <a href="http://www.vts.su.ac.rs" ><img src="src/images/banner.jpg" /></a></div>
-    <div style="background-color: white;margin-right: 11%; margin-left: 11%;position: relative; z-index: 2;">
+    <div class="comments1">
 
-        <div class="clearfix" id="firstwrapper" style="margin-right: 0%;margin-left: 0%; position: relative; z-index: 3;
-        min-height: 100vh;
- overflow: hidden;
- display: block;
- ">
+        <div class="clearfix comments2" id="firstwrapper">
     <?php
-    require "header.php";
+    require "newsheader.php";
     ?>
 
-    <div class="commentsection" style="position: relative; min-height: 100%;">
+    <div class="comments3 commentsection">
 
         <?php
 
@@ -91,13 +70,13 @@ include_once("admin/functions.php");
                 $nickname=$row['nickname'];
                 $comments=$row['comments'];
                 $approved=$row['approved'];
-                echo "<div style='position: relative'>";
-                echo "<div class='col-lg-6 commentspan' style='background-color: #f8f8f8;box-shadow: 1px 1px 2px 2px #ceddda;border-radius: 7px 7px;'><span class='nickname'>$nickname</span><span class='timeofcomment'> $newDate </span><br/>
+                echo "<div class='comments4'>";
+                echo "<div class='col-lg-6 commentspan comments5'><span class='nickname'>$nickname</span><span class='timeofcomment'> $newDate </span><br/>
  <span class='commentpart' >$comments</span>";
 
                 if(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'redakcija') {
                     $commid=$row['comments_id'];
-                    echo "<hr/><div style='text-align: right;padding: 1%;'>";
+                    echo "<hr/><div class=\"comments6\">";
                     echo "<button class='btn btn-danger' onClick='deletecommm($commid )' name='Delete'> <i class=\"fas fa-trash-alt\"></i></button></div>";
                     deletecomm();
                 }
@@ -110,7 +89,7 @@ include_once("admin/functions.php");
 
         }
         else{
-            echo "<div class='hashtag' style='background-color: transparent;height: 230px;margin-top: 17%'>Nema komentara. Budite prvi i ostavite komentar.</div>";
+            echo "<div class='hashtag comments7'>Nema komentara. Budite prvi i ostavite komentar.</div>";
         }
 
     ?>

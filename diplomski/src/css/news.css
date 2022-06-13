@@ -1,0 +1,22 @@
+.news0{position: fixed; z-index: 1;}
+.news1{background-color: white;margin-right: 11%; margin-left: 11%;position: relative; z-index: 2;}
+.news2{margin-right: 0%;margin-left: 0%; position: relative; z-index: 3; }
+.news3{text-align: right}
+.news4{font-size: 17px}
+.news5{color: #4B250F}
+.news6{color: #1e6eff}
+.news7{color: #1e6eff}
+.news8{text-align: center;margin-top: 2%}
+.news9{text-align: center;margin-top: 2%}
+.news10{display: none;}
+.news11{text-align: center;margin-top: 2%}
+.news12{width: 40%;   margin: 0 auto;}
+.news13{border-bottom: 1px solid #c2d0cd;width: 70%;}
+.news14{position: relative}
+.news15{background-color: #f8f8f8;box-shadow: 1px 1px 2px 2px #ceddda;border-radius: 7px 7px;}
+.news16{text-align: right;padding: 1%;}
+.news17{text-align: center;}
+.img-fluid {
+    max-width: 100%;
+    height: auto !important;
+}

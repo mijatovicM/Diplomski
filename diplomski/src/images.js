@@ -1,6 +1,6 @@
-const images = $('img.img-fluid');
+my_images = $('img.img-fluid');
 
-images.each(function (index){
+my_images.each(function (index){
     let element = $(this)
     while (true){
         if (element.parent().prop("tagName") === 'P'){

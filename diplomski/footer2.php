@@ -7,14 +7,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content=izvestavaj.me>
+    <link href="src/css/footer2.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div class="footer2 text-center center-block">
-
-    <h4 style="font-family: Teko;font-size: 25px;">Pratite nas i na društvenim mrežama</h4>
-    <a href="https://www.facebook.com" style=" color: #3b5998;"><i class="fab fa-facebook-square"></i></a>
-    <a href="https://instagram.com" style="color:#cd486b;"><i class="fab fa-instagram"></i></a>
-    <a href="https://twitter.com" style=" color:#38A1F3;"><i class="fab fa-twitter"></i></a>
+    <h4 class="footer20">Pratite nas i na društvenim mrežama</h4>
+    <a href="https://www.facebook.com" class="footer21"><i class="fab fa-facebook-square"></i></a>
+    <a href="https://instagram.com" class="footer22"><i class="fab fa-instagram"></i></a>
+    <a href="https://twitter.com" class="footer23"><i class="fab fa-twitter"></i></a>
 </div><!--end of footer-->
 </body>
 </html>

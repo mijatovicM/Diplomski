@@ -1,6 +1,6 @@
 <?php
-
-header("Content-Security-Policy: default-src 'self' https://code.jquery.com/ https://stackpath.bootstrapcdn.com/ https://use.fontawesome.com/releases/v5.3.1/css/all.css https://www.kurir.rs; ");
+$nonce = bin2hex(random_bytes('32'));
+header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net cdn.rawgit.com https://code.jquery.com/ https://stackpath.bootstrapcdn.com/ https://use.fontawesome.com/releases/v5.3.1/css/all.css https://www.kurir.rs use.fontawesome.com cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com https://ads.kurir-info.rs; script-src 'nonce-$nonce' 'self' https://cdn.jsdelivr.net cdn.rawgit.com https://code.jquery.com/ https://stackpath.bootstrapcdn.com/ https://use.fontawesome.com/releases/v5.3.1/css/all.css https://www.kurir.rs use.fontawesome.com cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com https://ads.kurir-info.rs; style-src 'self' https://fonts.googleapis.com/ https://cdnjs.cloudflare.com https://use.fontawesome.com/ cdn.jsdelivr.net; ");
 
 include_once("config/dbconfig.php");
 include_once("admin/functions.php");
@@ -56,6 +56,7 @@ if(isset($_POST['komentarisi']) ) {
 
     <!-- Bootstrap -->
     <link href="src/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="src/css/news.css" rel="stylesheet" type="text/css">
     <link type="text/css" rel="stylesheet" href="src/css/main.css" />
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="src/bootstrap/js/bootstrap.min.js"></script>
@@ -76,22 +77,17 @@ if(isset($_POST['komentarisi']) ) {
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.js"></script>
-<style>
-    .img-fluid {
-        max-width: 100%;
-        height: auto !important;
-    }
-</style>
+    <script src="src/js/news.js"></script>
 
 
 </head>
 <body>
 <div>
-    <div style="position: fixed; z-index: 1;" >
+    <div class="news0" >
         <a href="http://www.vts.su.ac.rs" ><img src="src/images/banner.jpg" /></a></div>
-    <div style="background-color: white;margin-right: 11%; margin-left: 11%;position: relative; z-index: 2;">
+    <div class="news1">
 
-        <div class="clearfix" id="firstwrapper" style="margin-right: 0%;margin-left: 0%; position: relative; z-index: 3; ">
+        <div class="clearfix news2" id="firstwrapper">
 
     <?php
     require "newsheader.php";
@@ -144,10 +140,10 @@ if(isset($_POST['komentarisi']) ) {
 
                 $originalDate =  $row['timeofinsert'];
                 $newDate = date("d/M/Y H:i", strtotime($originalDate));
-                echo "<div style='text-align: right'>$newDate";
+                echo "<div class=\"news3\">$newDate";
                 echo "<br/>";
                 echo "<p>Urednik: ".$row['creatorname']."</p> ";
-                echo "<p style='font-size: 17px'>".$row['cookie_count']."&nbsp<i class=\"far fa-eye\" style='color: #4B250F'></i>&nbsp&nbsp&nbsp";
+                echo "<p class=\"news4\">".$row['cookie_count']."&nbsp<i class=\"far fa-eye\" class=\"news5\"></i>&nbsp&nbsp&nbsp";
             }
 
             $sql = "SELECT * FROM liked_news WHERE id=?;";
@@ -156,10 +152,10 @@ if(isset($_POST['komentarisi']) ) {
 
             if($row = $result->fetch()) {
                 $num_rows = $result->rowCount();
-                echo $num_rows."&nbsp<i class=\"far fa-thumbs-up\" style='color: #1e6eff'></i></p> ";
+                echo $num_rows."&nbsp<i class=\"far fa-thumbs-up\" class=\"news6\"></i></p> ";
             }
             else{
-                echo "0"."&nbsp<i class=\"far fa-thumbs-up\" style='color: #1e6eff'></i></p> ";
+                echo "0"."&nbsp<i class=\"far fa-thumbs-up\" class=\"news6\"></i></p> ";
             }
 
             //SELECT news.id, news.title, news.caption, news.images, news.alt, news.newstype
@@ -180,7 +176,7 @@ if(isset($_POST['komentarisi']) ) {
 
 
             if(!isset($_SESSION['userId']) ){
-                echo '<div style="text-align: center;margin-top: 2%">';
+                echo '<div class="news8">';
                 echo "<form action='' method='post'><button class='btn btn-info' type='submit' name='notloggedin'>Sviđa mi se <i class=\"fas fa-thumbs-up\"></i></button></form> &nbsp;";
                 echo '</div>';
 
@@ -188,19 +184,19 @@ if(isset($_POST['komentarisi']) ) {
 
             elseif(isset($_SESSION['userId'])) {
                 $userid=$_SESSION['userId'];
-                echo '<div style="text-align: center;margin-top: 2%"/>';
+                echo '<div class="news8"/>';
                 $sql = "SELECT * FROM liked_news WHERE id=? AND users_id=?";
                 $result = $pdo->prepare($sql);
                 $result->execute([$id, $userid]);
                 if ($result->rowCount() > 0) {
                     while ($row = $result->fetch()) {
 
-                        echo "<button class='btn btn-info' onClick='likenews($id)' name='like' style='display: none;'>Sviđa mi se <i class=\"far fa-thumbs-up\"></i></button> &nbsp;";
+                        echo "<button class='btn btn-info' id='like-button' name='like' style='display: none;'>Sviđa mi se <i class=\"far fa-thumbs-up\"></i></button> &nbsp;";
                         like();
                     }
                 }
                 else{
-                    echo "<button class='btn btn-info' onClick='likenews($id)' name='like'>Sviđa mi se <i class=\"fas fa-thumbs-up\"'></i></button> &nbsp;";
+                    echo "<button class='btn btn-info' id='like-button' name='like'>Sviđa mi se <i class=\"fas fa-thumbs-up\"'></i></button> &nbsp;";
                     like();
                 }
 
@@ -212,9 +208,9 @@ if(isset($_POST['komentarisi']) ) {
 
 
             if(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'redakcija') {
-                echo '<div style="text-align: center;margin-top: 2%"/>';
+                echo '<div class="news8"/>';
 
-                echo "<button class='btn btn-danger' onClick='deletenewsme($id)' name='Delete'>Izbrišite <i class=\"fas fa-trash-alt\"></i></button> &nbsp;";
+                echo "<button class='btn btn-danger' id='deletenewsme' onClick='deletenewsme($id)' name='Delete'>Izbrišite <i class=\"fas fa-trash-alt\"></i></button> &nbsp;";
                 deletenews();
 
                 echo "</div>";
@@ -239,26 +235,31 @@ if(isset($_POST['komentarisi']) ) {
 
             <?php }
 
-            function like(){?>
+            function like(){
+                global $nonce;
+                ?>
                 <!-- Javascript function for deleting news -->
-                <script language="javascript">
-                    function likenews(likenewsid)
-                    {
+                <script language="javascript" nonce="<?=$nonce?>">
+                    document.getElementById('like-button').addEventListener('click', () => {
+                        console.log('asdf')
                         if(confirm("Da li želite da lajkujete ovu vest?")){
+                            let likenewsid = <?=$_GET['id'] ?? ''?>;
                             window.location.href='likenews.php?likenews_id=' +likenewsid+'&csrfToken='+'<?=generateCsrfToken()?>'
 
                             alert('Lajkovali ste ovu vest');
                             return true;
                         }
-                    }
+                    })
 
                 </script>
             <?php }
 
 
-            function deletenews(){?>
+            function deletenews(){
+                global $nonce
+                ?>
                 <!-- Javascript function for deleting news -->
-                <script language="javascript">
+                <script language="javascript" nonce="<?=$nonce?>">
                     function deletenewsme(delnewsid)
                     {
                         if(confirm("Da li sigurno želite da obrišete ovu vest?")){
@@ -313,7 +314,7 @@ if(isset($_POST['komentarisi']) ) {
             <?php
             $news_id = $_GET['id'] ?? '';
             ?>
-            <div style="width: 40%;   margin: 0 auto;">
+            <div class="news12">
                 <textarea name="user_input" id="user_input"  cols="30" rows="3" placeholder="Upišite komentar..." required maxlength="500" class="commentsinput" ></textarea>
             </div>
             <?=simplePostCsrf()?>
@@ -324,7 +325,7 @@ if(isset($_POST['komentarisi']) ) {
         </form>
 
 
-        <hr style="border-bottom: 1px solid #c2d0cd;width: 70%;"/>
+        <hr class="news13"/>
         <?php
 
         $id = $_GET['id'];
@@ -342,14 +343,14 @@ if(isset($_POST['komentarisi']) ) {
                 $comments=$row['comments'];
                 $approved=$row['approved'];
 
-                echo "<div style='position: relative'>";
-                echo "<div class='col-lg-6 commentspan' style='background-color: #f8f8f8;box-shadow: 1px 1px 2px 2px #ceddda;border-radius: 7px 7px;'><span class='nickname'>$nickname</span><span class='timeofcomment'> $newDate </span><br/>
+                echo "<div class=\"news14\">";
+                echo "<div class='col-lg-6 commentspan news15'><span class='nickname'>$nickname</span><span class='timeofcomment'> $newDate </span><br/>
  <span class='commentpart' >$comments</span>";
 
                 if(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'redakcija') {
                     $commid=$row['comments_id'];
-                    echo "<hr/><div style='text-align: right;padding: 1%;'>";
-                    echo "<button class='btn btn-danger' onClick='deletecommm($commid )' name='Delete'> <i class=\"fas fa-trash-alt\"></i></button></div>";
+                    echo "<hr/><div class=\"news16\">";
+                    echo "<button class='btn btn-danger' id='deletecommm' onClick='deletecommm($commid )' name='Delete'> <i class=\"fas fa-trash-alt\"></i></button></div>";
                     deletecomm();
                 }
 
@@ -362,22 +363,29 @@ if(isset($_POST['komentarisi']) ) {
 
         }
 
-        echo '<div style="text-align: center;"/>';
+        echo '<div class="news17"/>';
         echo '<a class="allcommentslink" href="comments.php?id='.$id.getCsrf().'">Pročitajte sve komentare</a><br/>';
         echo '</div>';
 
      ?>
 
-
+        <br>
+        <br>
+        <br>
     </div>
+            <div>
+                </br>
+                </br>
     <?php
-    require "footer.php";
+    require "footer2.php";
     ?>
+            </div>
 </div>
     </div>
 </div>
+<script src="src/images.js"></script>
 </body>
-<script>
+<script nonce="<?=$nonce?>">
     $("#user_input").emojioneArea({
         pickerPosition:"bottom"
     });

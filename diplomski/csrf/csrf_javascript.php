@@ -1,7 +1,8 @@
 <?php
 require_once 'csrf.php';
+$nonce = $nonce ?? ''
 ?>
-<script>
+<script nonce="<?=$nonce?>">
     window.onload = function () {
         let forms = $('form');
         let links = $('a');
@@ -17,9 +18,11 @@ require_once 'csrf.php';
         })
         links.each(function (index) {
             let href = $(this).attr("href")
-            let url = new URL(href, window.location.origin);
-            url.searchParams.append('csrfToken', '<?=generateCsrfToken()?>');
-            $(this).attr("href", url.toString())
+            if (href.startsWith('#') === false){
+                let url = new URL(href, window.location.origin);
+                url.searchParams.append('csrfToken', '<?=generateCsrfToken()?>');
+                $(this).attr("href", url.toString())
+            }
         })
     //    let link = $('a');
     //    link.href = link.href + '?csrfToken=<?//=generateCsrfToken()?>//'

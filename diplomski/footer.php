@@ -11,10 +11,10 @@
 <body>
 <div class="footer text-center center-block">
 
-        <h4 style="font-family: Teko;font-size: 25px;">Pratite nas i na društvenim mrežama</h4>
-        <a href="https://www.facebook.com" style=" color: #3b5998;"><i class="fab fa-facebook-square"></i></a>
-        <a href="https://instagram.com" style="color:#cd486b;"><i class="fab fa-instagram"></i></a>
-        <a href="https://twitter.com" style=" color:#38A1F3;"><i class="fab fa-twitter"></i></a>
+        <h4 class="footer0">Pratite nas i na društvenim mrežama</h4>
+        <a href="https://www.facebook.com" class="footer1"><i class="fab fa-facebook-square"></i></a>
+        <a href="https://instagram.com" class="footer2"><i class="fab fa-instagram"></i></a>
+        <a href="https://twitter.com" class="footer3"><i class="fab fa-twitter"></i></a>
 </div><!--end of footer-->
 </body>
 </html>

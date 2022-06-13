@@ -9,7 +9,6 @@ $categories = [
     'zabava',
     'srbija'
 ];
-li
 if (isset($_GET['category']) and in_array($_GET['category'], $categories)){
     $category = $_GET['category'];
 } else {

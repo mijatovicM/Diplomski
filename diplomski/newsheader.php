@@ -1,3 +1,6 @@
+<?php
+$nonce = $nonce ?? '';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +10,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content=izvestavaj.me>
-
+    <link href="src/css/newsheader.css" rel="stylesheet" type="text/css">
+    <link href="src/css/news.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <!--NAVBAR-->
@@ -45,12 +49,11 @@
                 <div class="dropdown">
                     <?php
                     if(isset($_SESSION['userId'])){
-                        echo '<i onclick="myFunction()"  class="fas fa-user-circle dropbtn nav-link glow" style="color: #fff; border-radius: 30px 30px;
-        box-shadow: 0px 0px 15px #4aaf93; " "></i>';
+                        echo '<i id="myFunctionElement"  class="fas fa-user-circle dropbtn nav-link glow class0"></i>';
                         echo'<div id="myDropdown" class="dropdown-content dropdown-menu-right">';
                     }
                     else{
-                        echo'<i onclick="myFunction()"  class="fas fa-user-circle dropbtn nav-link" style="color: white" "></i>';
+                        echo'<i  id="myFunctionElement"  class="fas fa-user-circle dropbtn nav-link class1"></i>';
                         echo'<div id="myDropdown" class="dropdown-content dropdown-menu-right">';
                     }
                     ?>
@@ -60,14 +63,14 @@
                     if(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'redakcija'){
 
 
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="admin/index.php">Redakcija</a></div>
-                    <hr style="border-color:#808080 "/>';
+                        echo '<div class="class2"><a href="admin/index.php">Redakcija</a></div>
+                    <hr class="class3"/>';
 
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="commented.php">Komentarisane vesti</a></div>
-                    <hr style="border-color:#808080 "/>';
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
+                        echo '<div class="class2"><a href="commented.php">Komentarisane vesti</a></div>
+                    <hr class="class3"/>';
+                        echo '<div class="class2"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
                     
-                    <hr style="border-color:#808080 "/>';
+                    <hr class="class3"/>';
 
 
 
@@ -75,28 +78,28 @@
                     elseif(isset($_SESSION['userId'])  && $_SESSION['userType'] == 'urednik'){
 
 
-                        echo '<div class="loggedInMessageDiv" style="width:250px;text-align: center;"><p class="loggedInMessage">Urednik: '.$_SESSION['userUid']. '</p></div><hr style="border-color:#808080 "/>';
+                        echo '<div class="loggedInMessageDiv class8"><p class="loggedInMessage">Urednik: '.$_SESSION['userUid']. '</p></div><hr class="class3"/>';
 
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="commented.php">Komentarisane vesti</a></div>
+                        echo '<div class="class2"><a href="commented.php">Komentarisane vesti</a></div>
               
-                    <hr style="border-color:#808080 "/>;
-                    <div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
+                    <hr class="class3"/>;
+                    <div class="class2"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
                    
-                    <hr style="border-color:#808080 "/>';
+                    <hr class="class3"/>';
 
 
                     }
                     elseif(isset($_SESSION['userId'])){
 
 
-                        echo '<div class="loggedInMessageDiv" style="width:250px;text-align: center;"><p class="loggedInMessage">Korisnik: '.$_SESSION['userUid']. '</p></div><hr style="border-color:#808080 "/>';
+                        echo '<div class="loggedInMessageDiv class8"><p class="loggedInMessage">Korisnik: '.$_SESSION['userUid']. '</p></div><hr class="class3"/>';
 
-                        echo '<div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="commented.php">Komentarisane vesti</a></div>
+                        echo '<div class="class2"><a href="commented.php">Komentarisane vesti</a></div>
                     
-                    <hr style="border-color:#808080 "/>;
-                    <div style="font-family: Teko;color: #ffcb00;font-size: 25px"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
+                    <hr class="class3"/>;
+                    <div class="class2"><a href="changeinfo.php">Izmenite informacije o sebi</a></div>
                    
-                    <hr style="border-color:#808080 "/>';
+                    <hr class="class3"/>';
                     }
 
 
@@ -109,10 +112,10 @@
                     if(isset($_SESSION['userId'])){
                         echo ' <form action="includes/logout.inc.php" method="post">
  <div class="logoutdiv">
-            <button type="submit" name="logout-submit" class="btn btn-danger" style="margin-bottom:10% ">Odjavi se</button></div></form>';
+            <button type="submit" name="logout-submit" class="btn btn-danger class20">Odjavi se</button></div></form>';
                     }
                     else{
-                        echo '<form action="includes/login.inc.php" method="post" style="text-align: center">
+                        echo '<form action="includes/login.inc.php" method="post" class="class21">
                <br/>
             <input type="text" class="loginInput" name="mailuid" placeholder="Korisničko ime...">
             <br/> <br/>
@@ -123,8 +126,8 @@
             <button type="submit" name="login-submit" class="btn btn-primary">Prijava</button>
                         <br/><br/>
                         
-<a href="signup.php" class="reg" style="font-size: 23px;">Registruj se</a>
-    <a href="forgotpassword/forgot.php" style="font-size: 23px;"><span>Zaboravljena lozinka?</span></a>
+<a href="signup.php" class="reg class22">Registruj se</a>
+    <a href="forgotpassword/forgot.php" class="class22"><span>Zaboravljena lozinka?</span></a>
 
         </form>';
 
@@ -133,13 +136,16 @@
                 </div>
     </div>
 
-    <script>
+    <?php
+    ?>
+    <script nonce="<?=$nonce?>">
         /* When the user clicks on the button,
         toggle between hiding and showing the dropdown content */
         function myFunction() {
             document.getElementById("myDropdown").classList.toggle("show");
         }
 
+        document.getElementById("myFunctionElement").addEventListener('click', myFunction)
         // Close the dropdown if the user clicks outside of it
         window.onclick = function(event) {
             if (!event.target.matches('.dropbtn')) {
@@ -164,8 +170,3 @@
 </body>
 </html>
 <?php
-if(isset($_GET['error'])) {
-    if ($_GET['error'] == "csrfError") {
-        echo "<div class='errordiv'>Forma nije submitovana na odgovarajući način</div>";
-    }
-}
