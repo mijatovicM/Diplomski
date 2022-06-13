@@ -6,10 +6,8 @@ include_once("config/dbconfig.php");
 include_once("admin/functions.php");
 require_once 'csrf/csrf.php';
 startSession();
-global $connection;
 $id = $_GET['id'];
     include_once("config/dbconfig.php");
-    global $connection;
     $sql = "SELECT * FROM news WHERE id=? ";
     $result = $pdo->prepare($sql);
     $result->execute([$id]);
@@ -126,7 +124,6 @@ if(isset($_POST['komentarisi']) ) {
 
 
             <?php
-            global $connection;
 
             $id = $_GET['id'];
             $sql = "SELECT * FROM news WHERE id=?";

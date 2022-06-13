@@ -18,14 +18,18 @@ if (isset($_GET['category']) and in_array($_GET['category'], $categories)){
 if(isset($_POST['search'])){
     $response= "<h6 class='searchBox'>Nema rezultata</h4 class='searchBoxNo'>";
 
-    $q=$connection->real_escape_string($_POST['q']);
-    $sql=$connection->query("SELECT DISTINCT hashtags FROM hashtags WHERE hashtags LIKE '%$q%' ");
 
 
-    if($sql->num_rows>0){
+    $q=$_POST['q'] ?? '';
+
+    $sql="SELECT DISTINCT hashtags FROM hashtags WHERE hashtags LIKE ? ";
+    $result = $pdo->prepare($sql);
+    $result->execute([$q]);
+
+    if($result->rowCount() > 0){
         $response="<ul class='searchBox'>";
 
-        while ($data=$sql->fetch_array())
+        while ($data=$result->fetch())
 
             $response .="<h6 class='searchBox'>".$data['hashtags']."</h6>";
         $response.="</ul>";

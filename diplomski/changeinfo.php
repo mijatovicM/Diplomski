@@ -42,7 +42,6 @@ require_once 'csrf/check_csrf.php';
 
         <div class="clearfix" id="firstwrapper" style="margin-right: 0%;margin-left: 0%; position: relative; z-index: 3; ">
     <?php
-    global $connection;
     require "header.php";
 
     if(isset($_GET['error'])) {

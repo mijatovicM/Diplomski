@@ -45,7 +45,6 @@ if(isset($_POST['signup-submit'])){
         exit();
     }
     else{
-        global $connection;
         $sql="SELECT username FROM users WHERE username=?";
         $result = $pdo->prepare($sql);
         $result->execute([$username]);

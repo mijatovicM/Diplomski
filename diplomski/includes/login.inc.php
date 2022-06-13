@@ -9,7 +9,6 @@ if(isset($_POST['login-submit'])) {
         header("Location: ../index.php?error=emptyfields");
         exit();
     } else {
-        global $connection;
         $sql = "SELECT * FROM users WHERE username=?;";
         $result = $pdo->prepare($sql);
         $result->execute([$mailuid]);

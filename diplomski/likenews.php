@@ -7,7 +7,6 @@ $username= $_SESSION['userUid'];
 $news_id=$_GET['likenews_id'];
 
 include_once("config/dbconfig.php");
-global $connection;
 # dodati proveru da li postoji vise korisnika sa istim lajkom
 # script name u headeru ime fa
 $sql = "INSERT IGNORE INTO liked_news (users_id,username,id) VALUES (?,?,?)";

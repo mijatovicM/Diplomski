@@ -46,7 +46,6 @@ include_once("config/dbconfig.php");
     require "header.php";
 
 
-global $connection;
 $email =$_GET['email'];
 $token =$_GET['token'];
 $sql = "SELECT * FROM users WHERE email='$email' AND registerToken='$token'";

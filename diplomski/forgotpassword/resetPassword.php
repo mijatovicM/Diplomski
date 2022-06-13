@@ -1,6 +1,3 @@
-<?php
-require_once '../csrf/check_csrf.php';
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,7 +49,6 @@ require_once '../csrf/check_csrf.php';
 
   <?php
 include_once("../config/dbconfig.php");
-global $connection;
   if (isset($_GET['email']) && isset($_GET['token'])) {
       $email = $_GET['email'];
       $token = $_GET['token'];
@@ -84,7 +80,7 @@ global $connection;
                 <button type="submit" class="btn btn-info" name="newpassword-submit">Promeni lozinku</button>
             </form>
             <?php
-            $current_path = 'localhost/diplomski/forgotpassword/';
+            $current_path = 'news/forgotpassword/';
             $url = "http://".$current_path."resetPassword.php?token=$token&email=$email";
         if(isset($_POST['newpassword-submit'])) {
             $password = $_POST['pwd'];
@@ -108,7 +104,7 @@ global $connection;
             $sql = "UPDATE `users` SET Token = '' WHERE email = ?";
             $result = $pdo->prepare($sql);
             $result->execute([$email]);
-            echo '<script>location.replace("http://localhost/diplomski/index.php?signup=success_forgot_password_change");</script>';
+            echo '<script>location.replace("http://news/index.php?signup=success_forgot_password_change");</script>';
         }
     } else {
       echo "<div class=\"commentedh1\" style=\"margin-top: 20%;font-size: 40px\"><h1> Link nije validan ili ste već izmenili lozinku!</h1></div>";

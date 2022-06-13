@@ -46,7 +46,6 @@ require_once '../csrf/check_csrf.php';
 
     <?php
 include_once("../config/dbconfig.php");
-global $connection;
 if (isset($_POST["forgotPassword"])) {
     $email = $_POST["forgotPassword"];
     $sql = "SELECT users_id FROM `users` WHERE email = ?";
@@ -57,7 +56,7 @@ if (isset($_POST["forgotPassword"])) {
       $str = "03565emikmtroimfweo324o0-tkerkm235_214rffhgkl";
       $str = str_shuffle($str);
       $str = substr($str, 0,10);
-      $current_path = 'localhost/diplomski/forgotpassword/';
+      $current_path = 'news/forgotpassword/';
       $url = "http://".$current_path."resetPassword.php?token=$str&email=$email";
       mail($email, "Povrat Lozinke", "Za resetovanje Vase sifre, kliknite na sledeci link: $url", "From: izvestavajme@gmail.com\r\n");
       $sql_update = "UPDATE `users` SET Token ='".$str."' WHERE email = '".$email."'";

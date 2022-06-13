@@ -4,19 +4,21 @@
 include_once("config/dbconfig.php");
 
 //autocomplete part
-global $connection;
 require_once 'csrf/csrf.php';
 if(isset($_POST['search'])){
     $response= "<h6 class='searchBox'>Nema rezultata</h4 class='searchBox'>";
 
-    $q=$connection->real_escape_string($_POST['q']);
-    $sql=$connection->query("SELECT DISTINCT hashtags FROM hashtags WHERE hashtags LIKE '%$q%' ");
+    $q=$_POST['q'] ?? '';
+
+    $sql="SELECT DISTINCT hashtags FROM hashtags WHERE hashtags LIKE ? ";
+    $result = $pdo->prepare($sql);
+    $result->execute([$q]);
 
 
-    if($sql->num_rows>0){
+    if($result->rowCount()>0){
         $response="<ul class='searchBox'>";
 
-        while ($data=$sql->fetch_array())
+        while ($data=$result->fetch())
 
             $response .="<h6 class='searchBox'>".$data['hashtags']."</h6>";
         $response.="</ul>";
